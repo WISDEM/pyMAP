@@ -448,9 +448,9 @@ CONTAINS
                                                                     !          | 
     DO i = 1, numHeaderStr                                          !          | 
        InitOut%WriteOutputHdr(i) = strHdrArray(i)                   !          | 
-       CALL RemoveNullChar( InitOut%WriteOutputHdr(i) )             !          |
+       CALL RemoveNullChar( InitOut%WriteOutputHdr(i) )             !          | 
        InitOut%WriteOutputUnt(i) = strUntArray(i)                   !          | 
-       CALL RemoveNullChar( InitOut%WriteOutputUnt(i) )             !          |
+       CALL RemoveNullChar( InitOut%WriteOutputUnt(i) )             !          | 
     END DO                                                          !          | 
                                                                     !          | 
     DEALLOCATE( strHdrArray )                                       !          | 
@@ -575,7 +575,7 @@ CONTAINS
     CALL MeshCopy ( SrcMesh  = u%PtFairleadDisplacement , &            !          |
                     DestMesh = y%PtFairleadLoad         , &            !          |
                     CtrlCode = MESH_SIBLING             , &            !          |
-                    IOS      = COMPONENT_OUTPUT         , &            !          |
+                    IOS      = COMPONENT_OUTPUT         , &            !          | 
                     Force    = .TRUE.                   , &            !          |
                     ErrStat  = ErrStat                  , &            !          |
                     ErrMess  = ErrMsg                     )            !          |
@@ -599,10 +599,10 @@ CONTAINS
 
     p%dt = interval ! warning: dt should NEVER, EVER EVER be changed or f2c/c2f'ed. Never CALL MAP_F2C_CopyParam
                     ! or CALL MAP_C2F_CopyParam
-                    
+
     CALL MAP_InitInput_Destroy ( InitInp%C_obj%object )  
-    CALL MAP_InitOutput_Destroy( InitOut%C_obj%object )
-     
+    CALL MAP_InitOutput_Destroy( InitOut%C_obj%object )  
+
   END SUBROUTINE MAP_Init                                                                        !   -------+
   !==========================================================================================================
 
@@ -861,6 +861,8 @@ CONTAINS
        RETURN
     END IF
 
+    ! WRITE(*,*) y%writeOutput
+
     ! Copy the MAP C output types to the native Fortran mesh output types
     DO i = 1,y%PtFairleadLoad%NNodes
        y%PtFairleadLoad%Force(1,i) = y%FX(i) 
@@ -959,8 +961,8 @@ CONTAINS
                                                                                                  !          |
     ErrStat = ErrID_None                                                                         !          |
     ! Open the MAP input file                                                                    !          |
-CALL GetNewUnit( Un, ErrStat, ErrMsg )
-CALL OpenFInpFile ( Un, file, ErrStat, ErrMsg )
+    CALL GetNewUnit( Un, ErrStat, ErrMsg )
+    CALL OpenFInpFile ( Un, file, ErrStat, ErrMsg )
     IF ( ErrStat >= AbortErrLev ) THEN
        RETURN
     END IF
