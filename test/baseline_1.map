@@ -10,16 +10,15 @@ Node  Type       X       Y       Z      M     B     FX    FY    FZ
 ---------------------- LINE P ROPERTIES ---------------------------------------
 Line    LineType  UnstrLen  NodeAnch  NodeFair  Flags
 (-)      (-)       (m)       (-)       (-)       (-)
-1        chainup   640        1         2        gx_pos gy_pos gz_a_pos H_ANCH omit_contact
+1        chainup   540        1         2        gx_pos gy_pos gz_a_pos H_ANCH 
 ---------------------- SOLVER OPTIONS-----------------------------------------
 Option 
 (-) 
- help
 inner_ftol 1e-6
 inner_gtol 1e-6
 inner_xtol 1e-6
 outer_tol 1e-4
 inner_max_its 400
 outer_max_its 400
- ref_position 1 2 3
-repeat 90 120 240 55
+ref_position 0 0 0
+repeat 90 180 -90
