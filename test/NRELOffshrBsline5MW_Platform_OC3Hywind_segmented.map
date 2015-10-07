@@ -1,9 +1,9 @@
 ---------------------- LINE DICTIONARY ---------------------------------------
-LineType     Diam     MassDenInAir    EA        CB   CIntDamp  Ca   Cdn    Cdt
-(-)          (m)      (kg/m)         (kN)       (-)  (Pa-s)    (-)  (-)    (-)
-Material     0.09      77.7066      384.243E6   1.0   1.0E8    0.6 -1.0    0.05
-Material2    0.09      100.7066     394.243E6   1.0   1.0E8    0.6 -1.0    0.05
-Material3    0.09      120.7066     424.243E6   1.0   1.0E8    0.6 -1.0    0.05
+LineType     Diam     MassDenInAir    EA        CB     CIntDamp  Ca   Cdn    Cdt
+(-)          (m)      (kg/m)         (N)        (-)    (Pa-s)    (-)  (-)    (-)
+Material     0.09      77.7066      384.243E6   0.001   1.0E8    0.6 -1.0    0.05
+Material2    0.09      100.7066     394.243E6   0.001   1.0E8    0.6 -1.0    0.05
+Material3    0.09      120.7066     424.243E6   0.001   1.0E8    0.6 -1.0    0.05
 ---------------------- NODE PROPERTIES ---------------------------------------
 Node Type       X     Y     Z     M     B     FX    FY    FZ
 (-)  (-)       (m)   (m)   (m)   (kg)  (mˆ3) (kN)  (kN)  (kN)
