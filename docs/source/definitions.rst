@@ -10,12 +10,20 @@ Static models are the type concerned in MAP++.
 Extra steps are taken to reformulate the classic single line, closed--form solution :cite:`irvine1992` into a piece-wise, multi-sgemented system.
 This piece wise system is composed of a collection of nodes and elements.
 
-.. image:: nstatic/bridle2.png
-    :width: 48%
-.. image:: nstatic/bridle3.png
-    :width: 48%
+.. _fig_1:
 
-Each element in the figure above is expressed as a single line counterpart in the image below in two configurations. 
+.. figure:: nstatic/bridle3.png
+    :width: 75%
+    :align: center
+
+    Fig. 1
+
+    .. raw:: html
+
+	<font size="2"><center><i><b>Definition of the entities constituting a multisgemented mooring system. Elements define line properties, and nodes define connection points between lines and location where external forces are applied.</b></i></center></font>
+
+
+Each element in :ref:`fig_1` is expressed as a single line counterpart in two configurations. 
 One configuration has the line hanging freely, whereas the second orientation account for friction and contact at the bottom boundary. 
 
 Nomenclature
@@ -33,14 +41,16 @@ Nomenclature
 :math:`l`      Horizontal fairlead excursion                                    [m]
 :math:`L`      Unstretched line length                                          [m]
 :math:`L_B`    Line length resting on the seabed                                [m]
-:math:`M_j`    Point mass applied to the jth node                               [kg]
+:math:`M_i`    Point mass applied to the ith node                               [kg]
 :math:`r_i`    Node position vector [xi ; yi ; zi]                              [m]
+:math:`R_i`    Rotation angle between the :math:`x_i` and :math:`X` axis        --
 :math:`s`      Unstretched distance from the anchor (:math:`0 \leq s \leq  L`)  [m]
-:math:`T_i`    Cable tension vector                                             [N]
+:math:`T_j`    Cable tension vector for the jth elemetn                         [N]
 :math:`Te(s)`  Cable tangential tension at distance s                           [N]
 :math:`V`      Vertical fairlead force                                          [N]
 :math:`V_a`    Vertical anchor force                                            [N]
+:math:`w`      Cable weight-per-unit length in fluid                            [N/m]
 :math:`x_0`    Horizontal force transition point for :math:`H(s)>0`             [N]                
-:math:`R_i`    Rotation angle between the :math:`x_i` and :math:`X` axis        --
 :math:`\rho`   Fluid density                                                    [kg/m^3]
 =============  ===============================================================  ============
+

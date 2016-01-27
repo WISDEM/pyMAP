@@ -17,10 +17,14 @@ import os
 import shlex
 import sphinx_rtd_theme
 
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.insert(0, os.path.abspath('../../python_driver/'))
 
 # -- General configuration ------------------------------------------------
 
@@ -33,10 +37,12 @@ import sphinx_rtd_theme
 extensions = [
     'sphinx.ext.autodoc',
     'sphinxcontrib.bibtex',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
     'sphinxcontrib.cmtinc',
 ]
-# extensions = []
+
+# autodoc_mock_imports = ['mapsys','numpy']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']
@@ -54,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'MAP++'
-copyright = u'2015, Marco Masciola'
+copyright = u'2015, mdm'
 author = u'Marco Masciola'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -81,7 +87,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+# exclude_patterns = ['']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -108,7 +114,7 @@ pygments_style = 'sphinx'
 #keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+todo_include_todos = True
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -143,7 +149,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = "./nstatic/favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
