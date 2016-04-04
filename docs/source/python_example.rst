@@ -20,6 +20,7 @@ Information explicitly requested is printed to the command line:
 
 .. code-block:: bash
 
+   MAP++ (Mooring Analysis Program++) Ver. 1.20.10 Mar-22-2016
    MAP++ environment properties (set externally)...
        Gravity constant          [m/s^2]  : 9.81
        Sea density               [kg/m^3] : 1025.00
@@ -31,22 +32,27 @@ Information explicitly requested is printed to the command line:
    [[  1.99e+04  -3.78e-03   5.19e-03  -4.89e-02  -2.00e+05  -1.77e-02]
     [  1.18e-03   1.99e+04  -1.06e-02   2.00e+05   3.50e-02  -6.17e-01]
     [  2.49e-03  -1.01e-03   2.27e+04   2.21e-03   2.23e-01  -2.12e-01]
-    [  1.95e-03   2.00e+05  -7.14e-03   1.70e+08   5.78e-03  -3.01e+01]
-    [ -2.00e+05   3.33e-04   4.85e-01  -4.89e-02   1.70e+08  -2.19e-02]
-    [  8.83e-04  -5.59e-01   1.12e-03  -5.44e+01  -7.06e-02   1.21e+08]]
+    [  1.95e-03   2.00e+05  -7.14e-03   2.17e+08   1.10e-02  -5.23e+01]
+    [ -2.00e+05   3.33e-04   4.85e-01  -4.89e-02   2.17e+08  -2.19e-02]
+    [  8.83e-04  -5.59e-01   1.12e-03  -8.53e+01  -7.90e-02   1.41e+08]]
    
    Linearized stiffness matrix with 5.00 surge vessel displacement:
    
-   [[  1.96e+04  -4.75e-03   1.17e+03   4.63e-02  -2.15e+05  -2.02e-03]
-    [ -3.30e-03   2.07e+04   7.58e-03   1.81e+05   5.86e-02   1.72e+03]
-    [  1.17e+03   8.71e-04   2.32e+04  -3.67e-02  -1.19e+04   8.90e-02]
-    [ -2.10e-03   2.00e+05  -2.70e-03   1.70e+08  -9.22e-02  -3.00e+01]
-    [ -2.00e+05   1.93e-03   4.91e-01   6.13e-02   1.70e+08  -2.49e-02]
-    [  1.12e-03  -5.60e-01   2.96e-03  -5.43e+01   7.27e-02   1.21e+08]]
-   Line 0: H = 651461.23 [N]  V = 1178548.28 [N]
-   Line 0: Fx = -651461.22 [N]  Fy = 117.69 [N]  Fz = 1178548.28 [N]
+   [[  1.96e+04  -2.58e-05   1.17e+03   9.61e-03  -2.15e+05  -1.67e-01]
+    [ -4.57e-04   2.07e+04   1.41e-03   1.81e+05  -5.24e-02   1.72e+03]
+    [  1.17e+03  -3.32e-04   2.32e+04  -5.38e-03  -1.19e+04   1.12e-03]
+    [  1.05e-03   2.00e+05   1.51e-03   2.17e+08   4.25e-02  -5.21e+01]
+    [ -2.00e+05  -8.91e-05   4.79e-01   5.43e-03   2.17e+08   6.60e-02]
+    [  2.10e-03  -5.60e-01   5.77e-03  -8.52e+01   1.07e-01   1.41e+08]]
+   Line 0: H = 597513.33 [N]  V = 1143438.75 [N]
+   Line 0: Fx = -597513.33 [N]  Fy = -0.00 [N]  Fz = 1143438.75 [N]
+   
 
 A figure is also produced to show the mooring geometry with a :math:`5` meter vessel offset:
+
+.. Note::
+   The default units for the linearized stiffness matrix are [N/m], [N/rad], [Nm/m], and [Nm/rad]. See
+   :ref:`the section on the linearized stiffness matrix <linearized_matrix_units>` in the FAQ for more information. 
 
 .. figure:: nstatic/example.png
     :align: center
@@ -62,6 +68,8 @@ A figure is also produced to show the mooring geometry with a :math:`5` meter ve
 
 Time-Marching for Dynamics Simulation
 -------------------------------------
+
+.. literalinclude:: ../../python_driver/driver.py
 
 Output
 ~~~~~~

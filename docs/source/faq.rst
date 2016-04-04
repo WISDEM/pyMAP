@@ -4,7 +4,7 @@ FAQ
 Using with Python
 -----------------
 
-''Python doesn't work''
+Python doesn't load MAP
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 If importing MAP++ into Python leads to this error on Linux/OSx: 
@@ -79,3 +79,33 @@ Alternatively, you can decrease the inner loop solve tolerance, but you might be
 Taut lines are strange like that. 
 
 A good solver option/initial guess strategy should converge on a solution in under 100-500 total iterations in the first solve.
+
+
+Running MAP++
+-------------
+
+What are the units of the linearized stiffness matrix?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _linearized_matrix_units:
+
+The linearized stiffness matrix is a :math:`6\times 6` entry comprised of four :math:`3 \times 3` blocks:
+
+.. math::
+   \mathbf{K}_{6\times 6}=\begin{bmatrix} \mathbf{A}_{3\times 3} & \mathbf{B}_{3\times 3}\\  \mathbf{C}_{3\times 3} & \mathbf{D}_{3\times 3} \end{bmatrix}
+
+The units are:
+
+* [N/m] for :math:`\mathbf{A}`
+* [N/rad] for :math:`\mathbf{B}` 
+* [Nm/m] for  :math:`\mathbf{C}` 
+* [Nm/rad] for :math:`\mathbf{D}`
+
+Note that the reference position is fixed at the :ref:`global origin <ref_position_is_fixed>`.
+
+The linearized stiffness values are not consistent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is likely attributed to round-off errors. 
+We recommend testing linearized stiffness matrix entries for sensitivity against different epsilon values, tolerances, and finite differencing methods. 
+The matrix entries should converge towards a set of values for those different options. 

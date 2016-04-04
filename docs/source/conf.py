@@ -42,7 +42,7 @@ extensions = [
     'sphinxcontrib.cmtinc',
 ]
 
-# autodoc_mock_imports = ['mapsys','numpy']
+# autodoc_mock_imports = [s','numpy']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']
