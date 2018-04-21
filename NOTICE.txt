@@ -1,4 +1,4 @@
-pyMAP for WISDEM and FloatingSE
+pyMAP for python module of MAP
 garrett[dot]barter[at]nrel[dot]gov
 
 MAP++ (Mooring Analysis Program ++)

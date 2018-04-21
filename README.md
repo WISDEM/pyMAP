@@ -4,7 +4,7 @@
 
 This is the development page for the python module fork of the Mooring Analysis Program++. 
 
-pyMAP is fork of [MAP++](https://github.com/old-NWTC/MAP) to make it a more pythonic module.  It also contains an [OpenMDAO](http://openmdao.org) component for use by [FloatingSE](https://github.com/WISDEM/FloatingSE) and [WISDEM](https://github.com/WISDEM).
+pyMAP is fork of [MAP++](https://github.com/old-NWTC/MAP) to make it a more pythonic module.
 
 MAP++ is a library used for modeling underwater mooring systems quasi-statically. We follow the [FAST Modularized Framework](https://nwtc.nrel.gov/FAST-Developers), and plan to integrate this software into FAST to model floating offshore wind turbines. Alternatively, MAP++ can be used in Python to prototype and design mooring systems, or hook into other dynamic simulation codes.
 
