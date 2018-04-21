@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import setuptools
+from setuptools import setup
 from numpy.distutils.core import setup, Extension
 import os
 import platform
 
-path = 'src'
+path = 'src' + os.sep + 'pymap'
 bstring_src = ['bstraux.c', 'bstrlib.c']
 cminpack_src = ['dpmpar.c', 'enorm.c', 'enorm_u.c',
                 'lmder.c', 'lmpar.c', 'qrfac.c',
@@ -16,21 +16,20 @@ src = ['freedata.c', 'jacobian.c', 'lineroutines.c', 'lmroutines.cc',
        'mapapi.c', 'maperror.c', 'mapinit.c', 'numeric.c', 'outputstream.c',
        'residual.c']
 for ifile in xrange(len(bstring_src)):
-    bstring_src[ifile] = os.path.join(path, 'map', 'bstring', bstring_src[ifile])
+    bstring_src[ifile] = os.path.join(path, 'bstring', bstring_src[ifile])
 for ifile in xrange(len(cminpack_src)):
-    cminpack_src[ifile] = os.path.join(path, 'map', 'cminpack', cminpack_src[ifile])
+    cminpack_src[ifile] = os.path.join(path, 'cminpack', cminpack_src[ifile])
 for ifile in xrange(len(simclist_src)):
-    simclist_src[ifile] = os.path.join(path, 'map', 'simclist', simclist_src[ifile])
+    simclist_src[ifile] = os.path.join(path, 'simclist', simclist_src[ifile])
 for ifile in xrange(len(src)):
-    src[ifile] = os.path.join(path, 'map', src[ifile])
-#src.extend( os.path.join(path, 'pymap', 'mapapi.py') )
+    src[ifile] = os.path.join(path, src[ifile])
 src.extend(bstring_src)
 src.extend(cminpack_src)
 src.extend(simclist_src)
 
 include_dirs = ['bstring','cminpack','lapack','simclist']
 for idir in xrange(len(include_dirs)):
-    include_dirs[idir] = os.path.join(path, 'map', include_dirs[idir])
+    include_dirs[idir] = os.path.join(path, include_dirs[idir])
 
 
 if platform.system() == 'Windows':
@@ -52,8 +51,9 @@ setup(
     py_modules=['pymap'],
     package_data={'pymap': []},
     packages=['pymap'],
-    # OS X, Linux
     ext_modules=[Extension('_libmap', sources=src, extra_compile_args=cflags,
-                           include_dirs=include_dirs)])
+                           include_dirs=include_dirs)],
+    zip_safe=False
+)
 
 
