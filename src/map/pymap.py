@@ -25,15 +25,15 @@ import os
 
 from sys import platform
 if platform == "linux" or platform == "linux2":
-    maplib = 'libmap-1.20.10.so'
+    maplib = '_libmap.so'
 elif platform == "darwin":
-    maplib = 'libmap-1.20.10.dylib'
+    maplib = '_libmap.so'
 elif platform == "win32":
-    maplib = 'map_x64.dll'
+    maplib = '_libmap.dll'
 
-libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + 'map' + os.path.sep + maplib
+libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
     
-class MapAPI(object):
+class pyMAP(object):
     """A collection of methods for the MAP++ program"""
     lib = cdll.LoadLibrary(libpath)
 
