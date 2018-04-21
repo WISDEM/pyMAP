@@ -1,3 +1,6 @@
+pyMAP for WISDEM and FloatingSE
+garrett[dot]barter[at]nrel[dot]gov
+
 MAP++ (Mooring Analysis Program ++)
 Copyright (c) 2014-2015  Marco D. Masciola
 map[dot]plus[dot]plus[dot]help[at]gmail
