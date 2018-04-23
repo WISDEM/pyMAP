@@ -34,7 +34,7 @@ for idir in xrange(len(include_dirs)):
 
 if platform.system() == 'Windows':
     cflags = ['-g', '-O1', '-m64', '-std=c99', '-DMAP_DLL_EXPORTS',
-              '-DCMINPACK_NO_DLL',  '-DNDEBUG', '-D_WINDOWS', '-D_USRDLL', '-D_MINGW']
+              '-DCMINPACK_NO_DLL',  '-D_WINDOWS', '-D_USRDLL', '-D_MINGW']
 elif platform.system() == 'Darwin':
     cflags = ['-g', '-O1', '-m64', '-fno-omit-frame-pointer', '-fPIC']#, '-std=c99']
 else:

@@ -24,13 +24,13 @@
 
 
 if __name__ == '__main__':      
-    from mapsys import *
+    from pymap import *
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     import numpy as np
     np.set_printoptions(formatter={'float': '{: 13.1f}'.format},linewidth=100)
 
-    mooring_1 = Map( )
+    mooring_1 = pyMAP( )
     
     mooring_1.map_set_sea_depth(320)
     mooring_1.map_set_gravity(9.81)

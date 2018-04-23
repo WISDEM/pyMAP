@@ -154,7 +154,7 @@ MAP_ERROR_CODE set_line_variables_pre_solve(Domain* domain, char* map_msg, MAP_E
     /* angle of azimuth */
     success = set_psi(line_iter, map_msg, ierr); 
     if (success!=MAP_SAFE) {
-      set_universal_error_with_message(map_msg, ierr, MAP_WARNING_6, "Line number %d", i);
+      //set_universal_error_with_message(map_msg, ierr, MAP_WARNING_6, "Line number %d", i);
     };
     i++;
   };
@@ -574,15 +574,15 @@ MAP_ERROR_CODE solve_line(Domain* domain, const float time, char* map_msg, MAP_E
     //   line_iter->l = MAP_HORIZONTAL_TOL;
     // } else if (line_iter->l<0.0) {
 	if (line_iter->l<0.0) {
-      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_54, "Line segment %d, l = %d [m].", n, line_iter->l);
+      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_54, "Line segment %d, l = %d [m].", n, line_iter->l);
       break; 
     } else if (line_iter->h<=-MACHINE_EPSILON) {
-      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_55, "Line segment %d, h = %d [m].", n, line_iter->h);
+      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_55, "Line segment %d, h = %d [m].", n, line_iter->h);
       break; 
     } else if (line_iter->line_property->omega>0.0) {
       success = check_maximum_line_length(line_iter, line_iter->options.omit_contact, map_msg, ierr);
       if (success) {        
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "Line segment %d.", n);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "Line segment %d.", n);
         break;
       };
     };    
@@ -598,7 +598,7 @@ MAP_ERROR_CODE solve_line(Domain* domain, const float time, char* map_msg, MAP_E
     */
     // /* check if L^2 norm is small. If not, MAP converged prematurely */
     // if (line_iter->residual_norm>1e-3) {
-    //   set_universal_error_with_message(map_msg, ierr, MAP_FATAL_90, "Line segment %d.", n);
+    //   //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_90, "Line segment %d.", n);
     //   break;      
     // };
     n++;
@@ -684,7 +684,7 @@ MAP_ERROR_CODE check_maximum_line_length(Line* line, const bool contact_flag, ch
 
   LMax = l - EA/W + sqrt(pow((EA/W),2) + 2.0*h*EA/W);
   if (Lu>=LMax && contact_flag==false) {
-    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "LMax = %f [m].", LMax);
+    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "LMax = %f [m].", LMax);
     return MAP_FATAL;
   };
   return MAP_SAFE;

@@ -130,7 +130,7 @@ MAP_ERROR_CODE forward_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->x[j] += ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j] += other_type->Fx_connect[i];
@@ -145,7 +145,7 @@ MAP_ERROR_CODE forward_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->y[j] += ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+1] += other_type->Fx_connect[i];
@@ -160,7 +160,7 @@ MAP_ERROR_CODE forward_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->z[j] += ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Forward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+2] += other_type->Fx_connect[i];
@@ -217,7 +217,7 @@ MAP_ERROR_CODE backward_difference_jacobian(MAP_OtherStateType_t* other_type, MA
       z_type->x[j] -= ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j] -= other_type->Fx_connect[i];
@@ -232,7 +232,7 @@ MAP_ERROR_CODE backward_difference_jacobian(MAP_OtherStateType_t* other_type, MA
       z_type->y[j] -= ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+1] -= other_type->Fx_connect[i];
@@ -247,7 +247,7 @@ MAP_ERROR_CODE backward_difference_jacobian(MAP_OtherStateType_t* other_type, MA
       z_type->z[j] -= ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Backward difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+2] -= other_type->Fx_connect[i];
@@ -296,7 +296,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->x[j] += ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j] = other_type->Fx_connect[i];      
@@ -307,7 +307,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       original_displacement = z_type->y[j];
       z_type->y[j] += ns->epsilon;
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
@@ -319,7 +319,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       original_displacement = z_type->z[j];
       z_type->z[j] += ns->epsilon;
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
@@ -335,7 +335,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       original_displacement = z_type->x[j];
       z_type->x[j] -= ns->epsilon;
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
@@ -351,7 +351,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->y[j] -= ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+1] -= other_type->Fx_connect[i];
@@ -366,7 +366,7 @@ MAP_ERROR_CODE central_difference_jacobian(MAP_OtherStateType_t* other_type, MAP
       z_type->z[j] -= ns->epsilon;
       success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
       if (success) {
-        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
+        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_78, "Central difference, x[%d]+delta, row %d, col %d.", j+1, THREE*i, THREE*j);
         return MAP_FATAL;
       };
       ns->jac[THREE*i][THREE*j+2] -= other_type->Fx_connect[i];

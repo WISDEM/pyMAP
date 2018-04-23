@@ -233,7 +233,8 @@ void set_universal_error_with_message(char* map_msg, MAP_ERROR_CODE* ierr, const
       };
     };
     while (1) {
-      va_start(arglist, in_string);      
+      va_start(arglist, in_string);
+      
 #     if !defined(_MSC_VER)
       r = vsnprintf((char*)user_msg->data, n+1, in_string, arglist); /* this is a copy of exvsnprintf in bstring library */
 #     else

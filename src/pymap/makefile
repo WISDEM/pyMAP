@@ -28,7 +28,7 @@ VPATH = cminpack:simclist:bstring:lapack
 ifeq ($(OS),Windows_NT)
   DEL_CMD   = del
   LIB_EXT   = dll
-  CFLAGS    = $(BITS) -g -std=c99 -DMAP_DLL_EXPORTS -DCMINPACK_NO_DLL  -DNDEBUG -D_WINDOWS -D_USRDLL -D_MINGW
+  CFLAGS    = $(BITS) -g -std=c99 -DMAP_DLL_EXPORTS -DCMINPACK_NO_DLL -D_WINDOWS -D_USRDLL -D_MINGW
   LDFLAGS   = $(BITS) -g -shared -Wl,--export-all-symbols
   LIB_FLAGS :=
 else
@@ -39,15 +39,15 @@ else
   ifeq ($(PLATFORM),Darwin)
     LIB_EXT   = dylib
     CC_TOOLS  = clang
-    CFLAGS    = -g -O1 -fno-omit-frame-pointer -fPIC -D DEBUG -Icminpack -Isimclist
+    CFLAGS    = -g -O1 -fno-omit-frame-pointer -fPIC -Icminpack -Isimclist
     LDFLAGS   = -g -dynamiclib
     LIB_FLAGS := -lm
   else ifeq ($(PLATFORM),Linux)
     LIB_EXT   = so
     CC_TOOLS  = gcc
-    #CFLAGS    = -g -O1 -fsanitize=address -fno-omit-frame-pointer -fPIC -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\" -Icminpack -Isimclist
-    #CFLAGS    = -g -fPIC -std=c99 -Wuninitialized -Wall -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\"
-    CFLAGS    = $(BITS) -g -fPIC -std=c99 -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\" -D WITH_LAPACK
+    #CFLAGS    = -g -O1 -fsanitize=address -fno-omit-frame-pointer -fPIC -DGITVERSION=\"$(GIT_VERSION)\" -Icminpack -Isimclist
+    #CFLAGS    = -g -fPIC -std=c99 -Wuninitialized -Wall -DGITVERSION=\"$(GIT_VERSION)\"
+    CFLAGS    = $(BITS) -g -fPIC -std=c99 -DGITVERSION=\"$(GIT_VERSION)\" -D WITH_LAPACK
     LDFLAGS   = $(BITS) -g -shared -llapacke
     LIB_FLAGS := -lm -llapacke
   endif
