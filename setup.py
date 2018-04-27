@@ -33,8 +33,10 @@ for idir in xrange(len(include_dirs)):
 
 
 if platform.system() == 'Windows':
-    cflags = ['-g', '-O1', '-m64', '-std=c99', '-DMAP_DLL_EXPORTS',
-              '-DCMINPACK_NO_DLL',  '-D_WINDOWS', '-D_USRDLL', '-D_MINGW']
+    # Note that there are unresolved problems building the extension with mingw and
+    # then linking with Python (built with MSC)
+    #cflags = ['-g','-O1','-m64','-std=c99','-DCMINPACK_NO_DLL','-D_WIN32','-D_MSC_VER']
+    cflags = ['/g','/O1','/m64','/DCMINPACK_NO_DLL','/D_WIN32','/D_MSC_VER']
 elif platform.system() == 'Darwin':
     cflags = ['-g', '-O1', '-m64', '-fno-omit-frame-pointer', '-fPIC']#, '-std=c99']
 else:
@@ -48,7 +50,7 @@ setup(
     author_email='garrett.barter@nrel.gov',
     license='Apache License, Version 2.0',
     package_dir={'': 'src'},
-    py_modules=['pymap'],
+    py_modules=['pymap'+os.sep+'pymap'],
     package_data={'pymap': []},
     packages=['pymap'],
     ext_modules=[Extension('_libmap', sources=src, extra_compile_args=cflags,
