@@ -29,7 +29,8 @@ if platform == "linux" or platform == "linux2":
 elif platform == "darwin":
     maplib = '_libmap.so'
 elif platform == "win32":
-    maplib = '_libmap.dll'
+    #maplib = '_libmap.dll'
+    maplib = '_libmap.pyd'
 
 libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
     
