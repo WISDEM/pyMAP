@@ -25,6 +25,9 @@
 #define _MAPAPI_H
 
 
+// Dummy function for Windows build of Python extension with ctypes
+MAP_EXTERNCALL void init_libmap();
+
 /**
  * @brief   Initalizes all MAP base types (including some internal state)
  * @details The idea is to set variables to zero and null to prevent seg-faults in the case of 
