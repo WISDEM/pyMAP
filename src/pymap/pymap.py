@@ -31,6 +31,8 @@ elif platform == "darwin":
 elif platform == "win32":
     #maplib = '_libmap.dll'
     maplib = '_libmap.pyd'
+elif platform == "cygwin":
+    maplib = '_libmap.dll'
 
 libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
 
