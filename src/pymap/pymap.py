@@ -221,7 +221,6 @@ class pyMAP(object):
                               MapInput_Type,
                               MapParameter_Type,
                               MapContinuous_Type,
-                              c_void_p,
                               MapConstraint_Type,
                               MapData_Type,
                               MapOutput_Type,
@@ -235,7 +234,6 @@ class pyMAP(object):
                                        MapInput_Type,
                                        MapParameter_Type,
                                        MapContinuous_Type,
-                                       c_void_p,
                                        MapConstraint_Type,
                                        MapData_Type,
                                        POINTER(c_int),
@@ -244,7 +242,6 @@ class pyMAP(object):
     lib.map_end.argtypes = [ MapInput_Type,
                              MapParameter_Type,
                              MapContinuous_Type,
-                             c_void_p,
                              MapConstraint_Type,
                              MapData_Type,
                              MapOutput_Type,
@@ -281,7 +278,7 @@ class pyMAP(object):
 
 
     def init( self ):
-        pyMAP.lib.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
+        pyMAP.lib.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print self.status.value
 
 
@@ -292,7 +289,7 @@ class pyMAP(object):
 
 
     def update_states(self, t, interval):
-        pyMAP.lib.map_update_states(c_float(t), c_int(interval), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
+        pyMAP.lib.map_update_states(c_float(t), c_int(interval), self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print self.status.value        
 
 
@@ -307,7 +304,7 @@ class pyMAP(object):
     # MAP_EXTERNCALL void MAP_Output_Delete( InputData* y )
     # MAP_EXTERNCALL void MAP_OtherState_Delete( ModelData* data )
     def end(self):
-        pyMAP.lib.map_end(self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
+        pyMAP.lib.map_end(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
 
 
 

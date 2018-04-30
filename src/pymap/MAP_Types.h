@@ -49,10 +49,6 @@
     void * object ;
     double dummy ;
   } MAP_ContinuousStateType_t ;
-  typedef struct MAP_DiscreteStateType {
-    void * object ;
-    double dummy ;
-  } MAP_DiscreteStateType_t ;
   typedef struct MAP_OtherStateType {
     void * object ;
     double * H ;     int H_Len ;
@@ -109,7 +105,6 @@
     MAP_InitInputType_t            MAP_InitInput ;
     MAP_InitOutputType_t           MAP_InitOutput ;
     MAP_ContinuousStateType_t      MAP_ContState ;
-    MAP_DiscreteStateType_t        MAP_DiscState ;
     MAP_OtherStateType_t           MAP_OtherState ;
     MAP_ConstraintStateType_t      MAP_ConstrState ;
     MAP_ParameterType_t            MAP_Param ;
