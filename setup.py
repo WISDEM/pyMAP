@@ -43,7 +43,8 @@ elif sys.platform == 'cygwin':
 elif platform.system() == 'Darwin':
     cflags = ['-g', '-O1', '-m64', '-fno-omit-frame-pointer', '-fPIC']#, '-std=c99']
 else:
-    cflags = ['-g', '-O1', '-m64', '-fPIC', '-std=c99', '-D WITH_LAPACK']
+    #cflags = ['-g', '-O1', '-m64', '-fPIC', '-std=c99', '-D WITH_LAPACK']
+    cflags = ['-g', '-O1', '-m64', '-fPIC', '-std=c99']
 
 setup(
     name='pyMAP',
