@@ -23,16 +23,24 @@ import sys
 from ctypes import *
 import os
 
+from distutils.sysconfig import get_config_var
+
 from sys import platform
-if platform == "linux" or platform == "linux2":
-    maplib = '_libmap.so'
-elif platform == "darwin":
-    maplib = '_libmap.so'
-elif platform == "win32":
-    #maplib = '_libmap.dll'
-    maplib = '_libmap.pyd'
-elif platform == "cygwin":
-    maplib = '_libmap.dll'
+
+libext = get_config_var('EXT_SUFFIX')
+if libext is None or libext == '':
+    if platform == "linux" or platform == "linux2":
+        libext = '.so'
+    elif platform == "darwin":
+        #libext = '.dyld'
+        libext = '.so'
+    elif platform == "win32":
+        #libext = '.dll'
+        libext = '.pyd'
+    elif platform == "cygwin":
+        libext = '.dll'
+
+maplib = '_libmap' + libext
 
 libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
 
