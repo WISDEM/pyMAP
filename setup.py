@@ -16,20 +16,20 @@ simclist_src = ['simclist.c']
 src = ['freedata.c', 'jacobian.c', 'lineroutines.c', 'lmroutines.cc',
        'mapapi.c', 'maperror.c', 'mapinit.c', 'numeric.c', 'outputstream.c',
        'residual.c']
-for ifile in xrange(len(bstring_src)):
+for ifile in range(len(bstring_src)):
     bstring_src[ifile] = os.path.join(path, 'bstring', bstring_src[ifile])
-for ifile in xrange(len(cminpack_src)):
+for ifile in range(len(cminpack_src)):
     cminpack_src[ifile] = os.path.join(path, 'cminpack', cminpack_src[ifile])
-for ifile in xrange(len(simclist_src)):
+for ifile in range(len(simclist_src)):
     simclist_src[ifile] = os.path.join(path, 'simclist', simclist_src[ifile])
-for ifile in xrange(len(src)):
+for ifile in range(len(src)):
     src[ifile] = os.path.join(path, src[ifile])
 src.extend(bstring_src)
 src.extend(cminpack_src)
 src.extend(simclist_src)
 
 include_dirs = ['bstring','cminpack','lapack','simclist']
-for idir in xrange(len(include_dirs)):
+for idir in range(len(include_dirs)):
     include_dirs[idir] = os.path.join(path, include_dirs[idir])
 
 

@@ -18,10 +18,12 @@
 # specific language governing permissions and limitations            
 # under the License.                                             
 
+from __future__ import print_function
 
 import sys
 from ctypes import *
 import os
+import six
 
 from distutils.sysconfig import get_config_var
 
@@ -290,23 +292,23 @@ class pyMAP(object):
         self.f_type_initout = self.CreateInitoutState( )
         libexec.set_init_to_null(self.f_type_init, self.status, pointer(self.ierr) )
         libexec.map_initialize_msqs_base(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout)
-        self.summary_file("outlist.map.sum")
+        self.summary_file(six.b('outlist.map.sum'))
 
 
     def init( self ):
         libexec.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
-        if self.ierr.value != 0 : print self.status.value
+        if self.ierr.value != 0 : print(self.status.value)
 
 
     def size_lines(self):
         size = libexec.map_size_lines(self.f_type_d, pointer(self.ierr), self.status )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return size
 
 
     def update_states(self, t, interval):
         libexec.map_update_states(c_float(t), c_int(interval), self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
 
 
     # Calls function in main.c and fordatamanager.c to delete insteads of c structs. First, the malloc'ed arrays need to vanish
@@ -335,14 +337,14 @@ class pyMAP(object):
     # MAP_EXTERNCALL InitializationData* MAP_InitInput_Create( char* map_msg, MAP_ERROR_CODE* ierr )
     def CreateInitState( self ) :
         obj = libexec.map_create_init_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL void MAP_InitOutput_Delete( InputData* io )
     def CreateInitoutState( self ) :
         obj = libexec.map_create_initout_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -350,7 +352,7 @@ class pyMAP(object):
     # MAP_EXTERNCALL ModelData *MAP_OtherState_Create( char *map_msg, MAP_ERROR_CODE *ierr )
     def CreateDataState( self ) :
         obj = libexec.map_create_other_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -358,7 +360,7 @@ class pyMAP(object):
     # MAP_EXTERNCALL InputData* MAP_Input_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateInputState( self ) :
         obj = libexec.map_create_input_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -366,14 +368,14 @@ class pyMAP(object):
     # MAP_EXTERNCALL ContinuousData* MAP_ContState_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateContinuousState( self ) :
         obj = libexec.map_create_continuous_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL OutputData *MAP_Output_Create( char *map_msg, MAP_ERROR_CODE *ierr )
     def CreateOutputState( self ) :
         obj = libexec.map_create_output_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -381,7 +383,7 @@ class pyMAP(object):
     # MAP_EXTERNCALL ConstraintData* MAP_ConstrState_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateConstraintState( self ) :
         obj = libexec.map_create_constraint_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -389,7 +391,7 @@ class pyMAP(object):
     # MAP_EXTERNCALL ParameterData* MAP_Param_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateParameterState( self ) :
         obj = libexec.map_create_parameter_type( self.status, pointer(self.ierr) )
-        if self.ierr.value != 0 : print self.status.value        
+        if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
@@ -407,7 +409,7 @@ class pyMAP(object):
         array = POINTER(c_double)
         array = libexec.map_plot_x_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             libexec.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
@@ -420,7 +422,7 @@ class pyMAP(object):
         array = POINTER(c_double)
         array = libexec.map_plot_y_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             libexec.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
@@ -434,7 +436,7 @@ class pyMAP(object):
         array = POINTER(c_double)
         array = libexec.map_plot_z_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             libexec.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
@@ -495,7 +497,7 @@ class pyMAP(object):
     def funcl( self, i ) :
         self.val = libexec.map_residual_function_length(self.f_type_d, i, self.status, pointer(self.ierr))
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -504,7 +506,7 @@ class pyMAP(object):
     def funch( self, i ) :
         self.val = libexec.map_residual_function_height(self.f_type_d, i, self.status, pointer(self.ierr))
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -513,7 +515,7 @@ class pyMAP(object):
     def dxdh( self, i ) :
         self.val = libexec.map_jacobian_dxdh( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -522,7 +524,7 @@ class pyMAP(object):
     def dxdv( self, i ) :
         self.val = libexec.map_jacobian_dxdv( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -531,7 +533,7 @@ class pyMAP(object):
     def dzdh( self, i ) :
         self.val = libexec.map_jacobian_dzdh( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -540,7 +542,7 @@ class pyMAP(object):
     def dzdv( self, i ) :
         self.val = libexec.map_jacobian_dzdv( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')
         return self.val
@@ -562,7 +564,7 @@ class pyMAP(object):
         array = POINTER(POINTER(c_double))
         array = libexec.map_linearize_matrix( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, epsilon, pointer(self.ierr), self.status)        
         if self.ierr.value != 0 :
-           print self.status.value        
+           print(self.status.value)
            self.end( )
            sys.exit('MAP terminated premature.')
         arr = [[array[j][i] for i in range(6)] for j in range(6)]
@@ -573,7 +575,7 @@ class pyMAP(object):
     def displace_vessel(self,x,y,z,phi,the,psi) :
         libexec.map_offset_vessel(self.f_type_d, self.f_type_u, x,y,z,phi,the,psi, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
-            print self.status.value        
+            print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')    
 
@@ -646,7 +648,7 @@ class pyMAP(object):
         assert isinstance(listIn, list), 'Must input a python list of strings'
         assert len(listIn) >= 8, 'Must have at least 4 sections, 3 lines per section'
         assert type(listIn[0]) == type(''), 'List elements must be strings'
-        charptr     = POINTER(c_char)
+        charptr = POINTER(c_char)
 
         dictFlag = nodeFlag = propFlag = solvFlag = False
         listIter = iter(listIn)
@@ -654,37 +656,37 @@ class pyMAP(object):
             if "LINE DICTIONARY" in line.upper():
                 dictFlag = True
                 nodeFlag = propFlag = solvFlag = False
-                for _ in xrange(2): next(listIter) # Process header
+                for _ in range(2): next(listIter) # Process header
                 continue;
             elif "NODE PROPERTIES" in line.upper():
                 nodeFlag = True
                 dictFlag = propFlag = solvFlag = False
-                for _ in xrange(2): next(listIter) # Process header
+                for _ in range(2): next(listIter) # Process header
                 continue;
             elif "LINE PROPERTIES" in line.upper():
                 propFlag = True
                 dictFlag = nodeFlag = solvFlag = False
-                for _ in xrange(2): next(listIter) # Process header
+                for _ in range(2): next(listIter) # Process header
                 continue;
             elif "SOLVER OPTIONS" in line.upper():
                 solvFlag = True
                 dictFlag = nodeFlag = propFlag = False
-                for _ in xrange(2): next(listIter) # Process header
+                for _ in range(2): next(listIter) # Process header
                 continue;
 
             if dictFlag:
-                self.f_type_init.contents.libraryInputLine =  line+'\n\0'
+                self.f_type_init.contents.libraryInputLine =  six.b(line+'\n\0')
                 libexec.map_add_cable_library_input_text(self.f_type_init)                    
 
             if nodeFlag:
-                self.f_type_init.contents.nodeInputLine = line+'\n\0'
+                self.f_type_init.contents.nodeInputLine = six.b(line+'\n\0')
                 libexec.map_add_node_input_text(self.f_type_init)
 
             if propFlag:
-                self.f_type_init.contents.elementInputLine = line+'\n\0'
+                self.f_type_init.contents.elementInputLine = six.b(line+'\n\0')
                 libexec.map_add_line_input_text(self.f_type_init)
 
             if solvFlag:
-                self.f_type_init.contents.optionInputLine = line+'\n\0'
+                self.f_type_init.contents.optionInputLine = six.b(line+'\n\0')
                 libexec.map_add_options_input_text(self.f_type_init)            
                 

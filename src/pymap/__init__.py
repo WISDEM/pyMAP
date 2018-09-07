@@ -1,1 +1,1 @@
-from pymap import pyMAP
+from .pymap import pyMAP
