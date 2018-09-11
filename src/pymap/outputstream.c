@@ -933,7 +933,7 @@ MAP_ERROR_CODE write_expanded_input_file_to_summary_file(FILE* file, Initializat
   return MAP_SAFE;
 };
 
-
+/*
 #if !defined(_MSC_VER)
 MAP_ERROR_CODE fopen_s(FILE** f, const char* name, const char* mode)
 {
@@ -945,3 +945,4 @@ MAP_ERROR_CODE fopen_s(FILE** f, const char* name, const char* mode)
   return MAP_SAFE;
 };
 #endif
+*/

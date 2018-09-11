@@ -33,7 +33,7 @@
 
 
 #if !defined(_MSC_VER)
-MAP_ERROR_CODE fopen_s(FILE** f, const char* name, const char* mode);
+//MAP_ERROR_CODE fopen_s(FILE** f, const char* name, const char* mode);
 #endif
 
 
