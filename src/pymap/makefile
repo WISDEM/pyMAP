@@ -29,7 +29,7 @@ ifeq ($(OS),Windows_NT)
   DEL_CMD   = del
   LIB_EXT   = dll
   CC_TOOLS  = gcc # Assuming using mingw32
-  CFLAGS    = $(BITS) -g -std=c99 -D_WIN32 -DCMINPACK_NO_DLL -D_MINGW
+  CFLAGS    = $(BITS) -g -std=c99 -fPIC -DCMINPACK_NO_DLL 
   LDFLAGS   = $(BITS) -g -shared -Wl,--export-all-symbols
   LIB_FLAGS :=
 else

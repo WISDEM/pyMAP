@@ -35,6 +35,7 @@
 
 // Dummy function for Windows build of Python extension with ctypes
 MAP_EXTERNCALL void init_libmap() {}
+MAP_EXTERNCALL void PyInit__libmap() {}
 
 MAP_EXTERNCALL void map_initialize_msqs_base(MAP_InputType_t* u_type,
                                              MAP_ParameterType_t* p_type, 

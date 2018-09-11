@@ -34,10 +34,8 @@ for idir in range(len(include_dirs)):
 
 
 if platform.system() == 'Windows':
-    # Note that there are unresolved problems building the extension with mingw and
-    # then linking with Python (built with MSC)
-    #cflags = ['-g','-O1','-m64','-std=c99','-DCMINPACK_NO_DLL','-D_WIN32','-D_MSC_VER']
-    cflags = ['/g','/O1','/m64','/DCMINPACK_NO_DLL','/D_WIN32','/D_MSC_VER']
+    # For Anaconda
+    cflags = ['-g', '-O1', '-m64', '-fPIC', '-std=c99','-DCMINPACK_NO_DLL']
 elif sys.platform == 'cygwin':
     cflags = ['-g', '-O1', '-m64', '-fPIC', '-std=c99']
 elif platform.system() == 'Darwin':
