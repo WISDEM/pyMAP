@@ -165,6 +165,8 @@ MAP_ERROR_CODE write_summary_file(InitializationData* init, MAP_ParameterType_t*
   strftime(time_buffer, TIME_BUFFER_SIZE, "%A %B %d-%Y at %H:%M:%S %p", &tm_info);
 # endif
 
+  file = fopen((char*)init->summary_file_name->data, "w");
+  /*
   err = fopen_s(&file, (char*)init->summary_file_name->data, "w");
   if (err!=MAP_SAFE) {
     //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_95, "File name: <%s>", init->summary_file_name->data);
@@ -175,6 +177,7 @@ MAP_ERROR_CODE write_summary_file(InitializationData* init, MAP_ParameterType_t*
     //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_38, "File name: <%s>", init->summary_file_name->data);
     return MAP_FATAL;
   };
+  */
   
   //__get_machine_name(name);  
 
@@ -932,6 +935,7 @@ MAP_ERROR_CODE write_expanded_input_file_to_summary_file(FILE* file, Initializat
   };
   return MAP_SAFE;
 };
+
 
 /*
 #if !defined(_MSC_VER)
