@@ -1,12 +1,26 @@
 ![map.png](https://bitbucket.org/repo/jbRLE9/images/1614157178-map.png)
 
-## pyMAP++ 
+# pyMAP++ 
 
-This is the development page for the python module fork of the Mooring Analysis Program++. 
+This is the python module fork of the [Mooring Analysis Program (MAP++)](https://github.com/old-NWTC/MAP) to make it a more pythonic module.
 
-pyMAP is fork of [MAP++](https://github.com/old-NWTC/MAP) to make it a more pythonic module.
+Author: [NREL WISDEM Team](mailto:systems.engineering@nrel.gov) 
 
-MAP++ is a library used for modeling underwater mooring systems quasi-statically. We follow the [FAST Modularized Framework](https://nwtc.nrel.gov/FAST-Developers), and plan to integrate this software into FAST to model floating offshore wind turbines. Alternatively, MAP++ can be used in Python to prototype and design mooring systems, or hook into other dynamic simulation codes.
+## Documentation
+
+MAP++ is a library used for modeling underwater mooring systems quasi-statically. MAP++ can be used in Python to prototype and design mooring systems, or hook into other dynamic simulation codes.
 
 More information on the theory behind MAP++ is described [here](http://cim.mcgill.ca/~mmascio1/ISOPE2013-TPC-0646.pdf), with the hopes to extend capabilities as described [here](http://cim.mcgill.ca/~mmascio1/61159.pdf). MAP++ is licensed under Apache version 2.
+
+## Prerequisites
+
+pyMAP requires a C++ compiler
+
+## Installation
+
+For detailed installation instructions of WISDEM modules see <https://github.com/WISDEM/WISDEM> or to install pyMAP by itself do:
+
+    $ python setup.py install
+
+For software issues please use <https://github.com/WISDEM/pyMAP/issues>.  For functionality and theory related questions and comments please use the NWTC forum for [Systems Engineering Software Questions](https://wind.nrel.gov/forum/wind/viewtopic.php?f=34&t=1002).
 
