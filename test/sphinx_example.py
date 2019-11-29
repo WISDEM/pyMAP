@@ -22,34 +22,41 @@ if __name__ == '__main__':
     mooring_1.map_set_gravity(9.81)       # m/s^2
     mooring_1.map_set_sea_density(1025.0) # kg/m^3
     
-    mooring_1.read_file("../test/baseline_2.map") 
-    mooring_1.summary_file('summary_file.txt')
+    mooring_1.read_file("baseline_2.map") 
+    #mooring_1.summary_file('summary_file.txt')
 
     mooring_1.init( )
     
     epsilon = 1e-3 # finite difference epsilon
     K = mooring_1.linear(epsilon)    
-    print "\nLinearized stiffness matrix with 0.0 vessel displacement:\n"
-    print np.array(K)
+    print("\nLinearized stiffness matrix with 0.0 vessel displacement:\n")
+    print(np.array(K))
      
     surge = 5.0 # 5 meter surge displacements
     mooring_1.displace_vessel(surge,0,0,0,0,0)
     mooring_1.update_states(0.0,0)
      
     K = mooring_1.linear(epsilon)    
-    print "\nLinearized stiffness matrix with %2.2f surge vessel displacement:\n"%(surge)
-    print np.array(K)
+    print("\nLinearized stiffness matrix with %2.2f surge vessel displacement:\n"%(surge))
+    print(np.array(K))
 
     # We need to call update states after linearization to find the equilibrium
     mooring_1.update_states(0.0,0)
      
     line_number = 0
     H,V = mooring_1.get_fairlead_force_2d(line_number)    
-    print "Line %d: H = %2.2f [N]  V = %2.2f [N]"%(line_number, H, V)
+    print("Line %d: H = %2.2f [N]  V = %2.2f [N]"%(line_number, H, V))
       
     fx,fy,fz = mooring_1.get_fairlead_force_3d(line_number)    
-    print "Line %d: Fx = %2.2f [N]  Fy = %2.2f [N]  Fz = %2.2f [N]"%(line_number, fx, fy, fz)
+    print("Line %d: Fx = %2.2f [N]  Fy = %2.2f [N]  Fz = %2.2f [N]"%(line_number, fx, fy, fz))
 
+    H,V = mooring_1.get_anchor_force_2d(line_number)    
+    print("Line %d: H = %2.2f [N]  V = %2.2f [N]"%(line_number, H, V))
+      
+    fx,fy,fz = mooring_1.get_anchor_force_3d(line_number)    
+    print("Line %d: Fx = %2.2f [N]  Fy = %2.2f [N]  Fz = %2.2f [N]"%(line_number, fx, fy, fz))
+
+    
     fig = plt.figure()
     ax = Axes3D(fig)
     num_points = 20
