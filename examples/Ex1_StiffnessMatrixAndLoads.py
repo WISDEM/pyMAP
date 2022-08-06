@@ -1,7 +1,10 @@
 """
- - Open a MAP input file
+ - (Open a MAP input file)
+ - Set a MAP input file via a list of strings
  - Perform linearization for various positions
  - Compute fairlead loads 
+ - Compute anchor loads 
+ - Plot 3D lines
 
 
 Copyright (C) 2015                   
@@ -9,11 +12,8 @@ License: http://www.apache.org/licenses/LICENSE-2.0
 """
 
 from pymap import pyMAP
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D # TODO remove me
 import numpy as np
-#np.set_printoptions(formatter={'float': '{: 13.1f}'.format},linewidth=100)
-
+import matplotlib.pyplot as plt
 
 def main(test=False):
 
@@ -50,9 +50,8 @@ def main(test=False):
     moor.init( ) # TODO remove me
 
     # --- Plot initial
-    # TODO
-    #if not test:
-    #    fig, ax = moor.plot(numPoints=20, colors=['k'], ls='--')
+    if not test:
+       fig, ax = moor.plot(numPoints=20, colors=['k'], ls='--')
     
     # --- Linearization with no displacement
     epsilon = 1e-5 # finite difference epsilon
@@ -102,19 +101,8 @@ def main(test=False):
         #print("Values : ", ["{0:0.2f}".format(i) for i in v])
 
     # --- Plot
-    #if not test:
-    #    fig, ax = moor.plot(numPoints=20, colors=['b'], fig=fig, ax=ax)
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    for i in range(0,moor.size_lines()):
-        x = moor.plot_x( i, 20 )
-        y = moor.plot_y( i, 20 )
-        z = moor.plot_z( i, 20 )        
-        ax.plot(x,y,z,'b-')
-
-    ax.set_xlabel('X [m]')
-    ax.set_ylabel('Y [m]')
-    ax.set_zlabel('Z [m]')        
+    if not test:
+        fig, ax = moor.plot(numPoints=20, colors=['b'], fig=fig, ax=ax)
     
     moor.end( )
 
