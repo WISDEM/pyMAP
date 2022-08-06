@@ -162,7 +162,7 @@ const char MAP_ERROR_STRING[][256] = {
 
 
 void set_universal_error(char* map_msg, MAP_ERROR_CODE* ierr, const MAP_ERROR_CODE new_error_code)
-{
+{ 
   int error_number = 0;
   int ret = 0;
   bstring out_string = NULL;
@@ -204,89 +204,90 @@ void map_reset_universal_error(char* map_msg, MAP_ERROR_CODE* ierr)
 
 void set_universal_error_with_message(char* map_msg, MAP_ERROR_CODE* ierr, const MAP_ERROR_CODE new_error_code, const char* in_string, ...)
 {
-  va_list arglist;
-  bstring out_string = NULL;
-  bstring user_msg = NULL;
-  bstring message = bformat("%s", map_msg); /* first format map_msg to contain previously raised errors */ 
-  const int START_VSNBUFF = 16;    
-  int error_number = 0;
-  int ret = 0;
-  int r = 0;
-  int n = 0;
-
-  /* This is a re-implementation of the bstring library routines 'bformat(...)  
-   * Take the variable argument list and create a string with it. This lets you
-   * create a custom message to be rpinted to the terminal.
-   */
-  do { 
-    n = (int)(2*strlen(in_string));
-    if (n<START_VSNBUFF) {
-      n = START_VSNBUFF;
-    };
-    user_msg = bfromcstralloc(n+2, "");
-    if (!user_msg) {
-      n = 1;
-      user_msg = bfromcstralloc(n+2, "");
-      if (!user_msg) {
-        user_msg = NULL;
-        break;
-      };
-    };
-    while (1) {
-      va_start(arglist, in_string);
-      
-#     if !defined(_MSC_VER)
-      r = vsnprintf((char*)user_msg->data, n+1, in_string, arglist); /* this is a copy of exvsnprintf in bstring library */
-#     else
-      r = vsnprintf_s((char*)user_msg->data, n, _TRUNCATE, in_string, arglist); /* windows way (or ISO C11 Annex K) way of doing things */
-      /* This function works, but you need to specify the _CRT_SECURE_NO_WARNINGS compiler flag. Visual Studio hates this: 
-       * r = vsnprintf((char*)user_msg->data, n + 1, in_string, arglist);
-       */
-#     endif
-      va_end(arglist);
-      user_msg->data[n] = (unsigned char)'\0';
-      user_msg->slen = (int)strlen((char*)user_msg->data);
-      if (user_msg->slen < n) {
-        break;
-      };
-      if (r>n) {
-        n = r;
-      } else {
-        n += n;
-      };
-      if (0!=balloc(user_msg, n+2)) {
-        bdestroy(user_msg);
-        break;
-      };
-    }; 
-  } while (0);
-
-  if (new_error_code>=MAP_WARNING_1) { 
-    /* MAP did not quite fail. Let users know what the error is */    
-    error_number = new_error_code - MAP_WARNING_1 + 1;
-    out_string = bformat("MAP_WARNING[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
-    if (*ierr<=MAP_WARNING) {
-      *ierr = MAP_WARNING;
-    };
-  } else if (new_error_code>=MAP_ERROR_1 ) { 
-    /* MAP failed but recovered */    
-    error_number = new_error_code - MAP_ERROR_1+1;    
-    out_string = bformat("MAP_ERROR[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
-    if (*ierr<=MAP_ERROR) {
-      *ierr = MAP_ERROR;
-    };
-  } else { 
-    /* MAP failed and program must end prematurely */    
-    error_number = new_error_code;
-    out_string = bformat("MAP_FATAL[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
-    *ierr = MAP_FATAL;
-  };
-
-  ret = bconcat(message, out_string);
-  ret = btrunc(message, MAP_ERROR_STRING_LENGTH-1);
-  copy_target_string(map_msg, message->data);
-  ret = bdestroy(out_string);
-  ret = bdestroy(message);
-  ret = bdestroy(user_msg);
+// Commented for python version
+//   va_list arglist;
+//   bstring out_string = NULL;
+//   bstring user_msg = NULL;
+//   bstring message = bformat("%s", map_msg); /* first format map_msg to contain previously raised errors */ 
+//   const int START_VSNBUFF = 16;    
+//   int error_number = 0;
+//   int ret = 0;
+//   int r = 0;
+//   int n = 0;
+// 
+//   /* This is a re-implementation of the bstring library routines 'bformat(...)  
+//    * Take the variable argument list and create a string with it. This lets you
+//    * create a custom message to be rpinted to the terminal.
+//    */
+//   do { 
+//     n = (int)(2*strlen(in_string));
+//     if (n<START_VSNBUFF) {
+//       n = START_VSNBUFF;
+//     };
+//     user_msg = bfromcstralloc(n+2, "");
+//     if (!user_msg) {
+//       n = 1;
+//       user_msg = bfromcstralloc(n+2, "");
+//       if (!user_msg) {
+//         user_msg = NULL;
+//         break;
+//       };
+//     };
+//     while (1) {
+//       va_start(arglist, in_string);
+//       
+// #     if !defined(_MSC_VER)
+//       r = vsnprintf((char*)user_msg->data, n+1, in_string, arglist); /* this is a copy of exvsnprintf in bstring library */
+// #     else
+//       r = vsnprintf_s((char*)user_msg->data, n, _TRUNCATE, in_string, arglist); /* windows way (or ISO C11 Annex K) way of doing things */
+//       /* This function works, but you need to specify the _CRT_SECURE_NO_WARNINGS compiler flag. Visual Studio hates this: 
+//        * r = vsnprintf((char*)user_msg->data, n + 1, in_string, arglist);
+//        */
+// #     endif
+//       va_end(arglist);
+//       user_msg->data[n] = (unsigned char)'\0';
+//       user_msg->slen = (int)strlen((char*)user_msg->data);
+//       if (user_msg->slen < n) {
+//         break;
+//       };
+//       if (r>n) {
+//         n = r;
+//       } else {
+//         n += n;
+//       };
+//       if (0!=balloc(user_msg, n+2)) {
+//         bdestroy(user_msg);
+//         break;
+//       };
+//     }; 
+//   } while (0);
+// 
+//   if (new_error_code>=MAP_WARNING_1) { 
+//     /* MAP did not quite fail. Let users know what the error is */    
+//     error_number = new_error_code - MAP_WARNING_1 + 1;
+//     out_string = bformat("MAP_WARNING[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
+//     if (*ierr<=MAP_WARNING) {
+//       *ierr = MAP_WARNING;
+//     };
+//   } else if (new_error_code>=MAP_ERROR_1 ) { 
+//     /* MAP failed but recovered */    
+//     error_number = new_error_code - MAP_ERROR_1+1;    
+//     out_string = bformat("MAP_ERROR[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
+//     if (*ierr<=MAP_ERROR) {
+//       *ierr = MAP_ERROR;
+//     };
+//   } else { 
+//     /* MAP failed and program must end prematurely */    
+//     error_number = new_error_code;
+//     out_string = bformat("MAP_FATAL[%d] : %s. %s\n", error_number, MAP_ERROR_STRING[new_error_code], user_msg->data);
+//     *ierr = MAP_FATAL;
+//   };
+// 
+//   ret = bconcat(message, out_string);
+//   ret = btrunc(message, MAP_ERROR_STRING_LENGTH-1);
+//   copy_target_string(map_msg, message->data);
+//   ret = bdestroy(out_string);
+//   ret = bdestroy(message);
+//   ret = bdestroy(user_msg);
 };
 

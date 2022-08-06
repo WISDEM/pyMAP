@@ -232,7 +232,7 @@ MAP_ERROR_CODE call_minpack_lmder(Line* line, InnerSolveAttributes* inner_opt, c
   switch (inner_opt->info) {
   case 0 :
     success = MAP_FATAL;
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_39, "Line segment %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_39, "Line segment %d.", line_num);
     break;
   case 1 :
     success = MAP_SAFE;
@@ -248,19 +248,19 @@ MAP_ERROR_CODE call_minpack_lmder(Line* line, InnerSolveAttributes* inner_opt, c
     break;
   case 5 :
     success = MAP_FATAL;
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_40, "Line segment %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_40, "Line segment %d.", line_num);
     break;
   case 6 :
     success = MAP_FATAL;
-    //set_universal_error_with_message(map_msg, ierr, MAP_ERROR_11, "Line segment %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_ERROR_11, "Line segment %d.", line_num);
     break;
   case 7 :
     success = MAP_FATAL;
-    //set_universal_error_with_message(map_msg, ierr, MAP_ERROR_13, "Line segment %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_ERROR_13, "Line segment %d.", line_num);
     break;
   case 8 :
     success = MAP_FATAL;
-    //set_universal_error_with_message(map_msg, ierr, MAP_ERROR_12, "Line segment %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_ERROR_12, "Line segment %d.", line_num);
     break;
   default :
     success = MAP_SAFE;

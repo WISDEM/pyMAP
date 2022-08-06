@@ -169,12 +169,12 @@ MAP_ERROR_CODE write_summary_file(InitializationData* init, MAP_ParameterType_t*
   /*
   err = fopen_s(&file, (char*)init->summary_file_name->data, "w");
   if (err!=MAP_SAFE) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_95, "File name: <%s>", init->summary_file_name->data);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_95, "File name: <%s>", init->summary_file_name->data);
     return MAP_FATAL;
   };
   
   if (file==NULL) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_38, "File name: <%s>", init->summary_file_name->data);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_38, "File name: <%s>", init->summary_file_name->data);
     return MAP_FATAL;
   };
   */
