@@ -38,6 +38,11 @@ setup(
     package_data={'pymap': []},
     packages=['pymap'],
     ext_modules=[pymapExt],
+    install_requires=[
+        'matplotlib', 
+        'numpy',
+        'future', 
+    ],
     zip_safe=False
 )
 
