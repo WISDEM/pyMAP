@@ -1,3 +1,8 @@
+# Ignore files starting with _
+_*
+!__init__.py
+*.sum
+
 *.py[cod]
 frame3dd
 .DS_Store
