@@ -331,6 +331,7 @@ class pyMAP(object):
         self._WtrDepth    = None
         self._WtrDens     = None
         self._filename    = None
+        self.Nodes=[]
      
         
         # Wrapper data
@@ -376,9 +377,9 @@ class pyMAP(object):
 
     def __repr__(self):
         s ='<{} object> with attributes:\n'.format(type(self).__name__)
-        #s+='|- Nodes: {}\n'.format(len(self.Nodes))
-        #for n in self.Nodes:
-        #    s+='|   {}\n'.format(n)
+        s+='|- Nodes: {}\n'.format(len(self.Nodes))
+        for n in self.Nodes:
+            s+='|   {}\n'.format(n)
         s+='|- _WtrDepth: {}\n'.format(self._WtrDepth)
         s+='|- _WtrDens : {}\n'.format(self._WtrDens)
         s+='|- _gravity : {}\n'.format(self._gravity)
@@ -786,57 +787,97 @@ class pyMAP(object):
     #        self.end( )
     #        sys.exit('MAP terminated premature.')   
 
+
     def read_file( self, fileName ):
         with open(fileName) as f:
             lines = f.read().splitlines()
         self.read_list_input( lines )
+# 
+
                     
     def read_list_input(self, listIn):
         assert isinstance(listIn, list), 'Must input a python list of strings'
         assert len(listIn) >= 8, 'Must have at least 4 sections, 3 lines per section'
         assert type(listIn[0]) == type(''), 'List elements must be strings'
         charptr = POINTER(c_char)
+        option_breaks = ("LINE DICTIONARY", "NODE PROPERTIES", "LINE PROPERTIES", "SOLVER OPTIONS")
 
-        dictFlag = nodeFlag = propFlag = solvFlag = False
+        # --- Read file lines and store in different lists
+        sCabLib = []
+        sNodes = []
+        sProps = []
+        sOpts  = []
         listIter = iter(listIn)
         for line in listIter:
             if "LINE DICTIONARY" in line.upper():
-                dictFlag = True
-                nodeFlag = propFlag = solvFlag = False
-                for _ in range(2): next(listIter) # Process header
-                continue;
-            elif "NODE PROPERTIES" in line.upper():
-                nodeFlag = True
-                dictFlag = propFlag = solvFlag = False
-                for _ in range(2): next(listIter) # Process header
-                continue;
-            elif "LINE PROPERTIES" in line.upper():
-                propFlag = True
-                dictFlag = nodeFlag = solvFlag = False
-                for _ in range(2): next(listIter) # Process header
-                continue;
-            elif "SOLVER OPTIONS" in line.upper():
-                solvFlag = True
-                dictFlag = nodeFlag = propFlag = False
-                for _ in range(2): next(listIter) # Process header
-                continue;
+                for _ in range(3): line = next(listIter) # Process Header
+                while not any(opt in line for opt in option_breaks):
+                    sCabLib.append(line)
+                    line = next(listIter)
 
-            if dictFlag:
-                self.f_type_init.contents.libraryInputLine =  six.b(line+'\n\0')
-                pyMAP.libexec.map_add_cable_library_input_text(self.f_type_init)                    
+            if "NODE PROPERTIES" in line.upper():
+                for _ in range(3): line = next(listIter) # Process Header
+                while not any(opt in line for opt in option_breaks):
+                    sNodes.append(line)
+                    line = next(listIter)
 
-            if nodeFlag:
-                self.f_type_init.contents.nodeInputLine = six.b(line+'\n\0')
-                pyMAP.libexec.map_add_node_input_text(self.f_type_init)
+            if "LINE PROPERTIES" in line.upper():
+                for _ in range(3): line = next(listIter) # Process Header
+                while not any(opt in line for opt in option_breaks):
+                    sProps.append(line)
+                    line = next(listIter)
 
-            if propFlag:
-                self.f_type_init.contents.elementInputLine = six.b(line+'\n\0')
-                pyMAP.libexec.map_add_line_input_text(self.f_type_init)
+            if "SOLVER OPTIONS" in line.upper():
+                for _ in range(2): line = next(listIter) # Process Header
+                try:
+                    line=next(listIter)
+                    while not any(opt in line for opt in option_breaks):
+                        sOpts.append(line)
+                        line = next(listIter,"SOLVER OPTIONS")
+                except StopIteration:
+                    pass
 
-            if solvFlag:
-                self.f_type_init.contents.optionInputLine = six.b(line+'\n\0')
-                pyMAP.libexec.map_add_options_input_text(self.f_type_init)            
+        # --- Setup a list of Nodes. 
+        self.Nodes=[]
+        for line in sNodes:
+            sp=line.split()
+            n = {}
+            n['ID']   = int(sp[0])
+            n['type'] = sp[1]
+            z=sp[4]
+            if z.strip()=='depth':
+                z=self._WtrDepth
+            elif z.startswith('#'):
+                print('>>> TODO mappp.py: z starting with #: ', z)
+                z=float(z[1:])
+            else:
+                z=float(z)
+            x=sp[2]
+            y=sp[3]
+            if x.startswith('#'):
+                print('>>> TODO mappp.py: x starting with #: ', z)
+                x=x[1:]
+            if y.startswith('#'):
+                print('>>> TODO mappp.py: y starting with #: ', z)
+                y=y[1:]
+            x = float(x)
+            y = float(y)
+            n['position'] = np.array((x, y, z))
+            self.Nodes.append(n)
 
+        # --- Load input lines into library
+        for line in sCabLib:
+            self.f_type_init.contents.libraryInputLine =  six.b(line+'\n\0')
+            pyMAP.libexec.map_add_cable_library_input_text(self.f_type_init)                    
+        for line in sNodes:
+            self.f_type_init.contents.nodeInputLine = six.b(line+'\n\0')
+            pyMAP.libexec.map_add_node_input_text(self.f_type_init)
+        for line in sProps:
+            self.f_type_init.contents.elementInputLine =six.b(line+'\n\0')
+            pyMAP.libexec.map_add_line_input_text(self.f_type_init)
+        for line in sOpts:
+            self.f_type_init.contents.optionInputLine = six.b(line+'\n\0')
+            pyMAP.libexec.map_add_options_input_text(self.f_type_init)            
 
     # --------------------------------------------------------------------------------}
     # --- Utils 
