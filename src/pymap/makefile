@@ -18,34 +18,37 @@
 # specific language governing permissions and limitations            
 # under the License.                                             
 
+MAP_VER:=1.20.10
 
 BITS = -m64
 PLATFORM = $(shell uname -s)
 VPATH = cminpack:simclist:bstring:lapack
 
+
 ifeq ($(OS),Windows_NT)
-# NOTE: This is just for compiling the c-code!
-# If making Python extension, please use setup.py, which has different options set
   DEL_CMD   = del
   LIB_EXT   = dll
-  CC_TOOLS  = gcc # Assuming using mingw32
-  CFLAGS    = $(BITS) -g -std=c99 -fPIC -DCMINPACK_NO_DLL 
+  CFLAGS    = $(BITS) -g -std=c99 -DMAP_DLL_EXPORTS -DCMINPACK_NO_DLL  -DNDEBUG -D_WINDOWS -D_USRDLL -D_MINGW
   LDFLAGS   = $(BITS) -g -shared -Wl,--export-all-symbols
   LIB_FLAGS :=
+  CC_TOOLS  = gcc
 else
   PLATFORM = $(shell uname -s)
   DEL_CMD   = rm -rf
+  GIT_VERSION := $(shell git describe --abbrev=4 --dirty --always)
 
   ifeq ($(PLATFORM),Darwin)
     LIB_EXT   = dylib
     CC_TOOLS  = clang
-    CFLAGS    = -g -O1 -fno-omit-frame-pointer -fPIC -Icminpack -Isimclist
+    CFLAGS    = -g -O1 -fno-omit-frame-pointer -fPIC -D DEBUG -Icminpack -Isimclist
     LDFLAGS   = -g -dynamiclib
     LIB_FLAGS := -lm
   else ifeq ($(PLATFORM),Linux)
     LIB_EXT   = so
     CC_TOOLS  = gcc
-    CFLAGS    = $(BITS) -g -fPIC -std=c99 -D WITH_LAPACK
+    #CFLAGS    = -g -O1 -fsanitize=address -fno-omit-frame-pointer -fPIC -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\" -Icminpack -Isimclist
+    #CFLAGS    = -g -fPIC -std=c99 -Wuninitialized -Wall -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\"
+    CFLAGS    = $(BITS) -g -fPIC -std=c99 -D DEBUG -DGITVERSION=\"$(GIT_VERSION)\" -D WITH_LAPACK
     LDFLAGS   = $(BITS) -g -shared -llapacke
     LIB_FLAGS := -lm -llapacke
   endif
@@ -75,7 +78,7 @@ OBJ       = lmder.o \
 
 
 all : $(OBJ)
-	$(CC_TOOLS) $(LDFLAGS) -o _libmap.$(LIB_EXT) $(DEBUG) $(OBJ) $(LIB_FLAGS) 
+	$(CC_TOOLS) $(LDFLAGS) -o libmap-$(MAP_VER).$(LIB_EXT) $(DEBUG) $(OBJ) $(LIB_FLAGS) 
 
 .c.o :
 	$(CC_TOOLS) -c $(CFLAGS) $<

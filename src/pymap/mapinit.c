@@ -481,7 +481,9 @@ MAP_ERROR_CODE check_help_flag(bstring list)
   MAP_ERROR_CODE success = 0;
 
   success = biseqcstrcaseless(list,"HELP"); /* string compare */
-  //if (success) {print_help_to_screen();}; 
+  if (success) { 
+    print_help_to_screen();
+  }; 
   return MAP_SAFE;
 };
 

@@ -39,23 +39,6 @@ def setupLib(libpath):
     """
     libexec = cdll.LoadLibrary(libpath)
 
-    '''
-    # these are the fortran derived types created by the FAST registry.
-    f_type_init = None
-    f_type_initout = None
-    f_type_d = None
-    f_type_u = None
-    f_type_x = None
-    f_type_y = None
-    f_type_z = None
-    f_type_p = None
-
-    ierr = c_int(0)
-    status = create_string_buffer(1024)
-    summary_file = c_char_p
-    val = c_double
-    '''
-
     class ModelData_Type(Structure):
         _fields_ = []
 
@@ -105,8 +88,17 @@ def setupLib(libpath):
 
 
     class OutputData_Type(Structure):
-        _fields_ = []
-
+        _fields_ = [("object", c_void_p),
+                    ("Fx",POINTER(c_double)),
+                    ("Fx_Len", c_int),
+                    ("Fy",POINTER(c_double)),
+                    ("Fy_Len", c_int),
+                    ("Fz",POINTER(c_double)),
+                    ("Fz_Len", c_int),
+                    ("WriteOuput",POINTER(c_float)),
+                    ("WriteOutput_Len", c_int),
+                    ("wrtOuput",POINTER(c_double)),
+                    ("wrtOutput_Len", c_int)]
 
 
     # void * object ;
@@ -228,6 +220,7 @@ def setupLib(libpath):
                               MapInput_Type,
                               MapParameter_Type,
                               MapContinuous_Type,
+                              c_void_p,
                               MapConstraint_Type,
                               MapData_Type,
                               MapOutput_Type,
@@ -241,20 +234,32 @@ def setupLib(libpath):
                                        MapInput_Type,
                                        MapParameter_Type,
                                        MapContinuous_Type,
+                                       c_void_p,
                                        MapConstraint_Type,
                                        MapData_Type,
                                        POINTER(c_int),
                                        c_char_p]
 
+    libexec.map_calc_output.argtypes = [c_float,
+                                    MapInput_Type,
+                                    MapParameter_Type,
+                                    MapContinuous_Type,
+                                    c_void_p,
+                                    MapConstraint_Type,
+                                    MapData_Type,
+                                    MapOutput_Type,
+                                    POINTER(c_int),
+                                    c_char_p]            
+    
     libexec.map_end.argtypes = [ MapInput_Type,
                              MapParameter_Type,
                              MapContinuous_Type,
+                             c_void_p,
                              MapConstraint_Type,
                              MapData_Type,
                              MapOutput_Type,
                              POINTER(c_int),
                              c_char_p]
-
 
     libexec.map_initialize_msqs_base.argtypes = [MapInput_Type,
                                              MapParameter_Type,
@@ -268,8 +273,10 @@ def setupLib(libpath):
                                     POINTER(c_int),
                                     c_char_p]
 
+    libexec.map_get_header_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
+    libexec.map_get_unit_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
+    #libexec.map_offset_fairlead.argtypes = [MapInput_Type, c_int, c_double, c_double, c_double, c_char_p, POINTER(c_int)]                    
     return libexec
-
 
 class pyMAP(object):
 
@@ -376,7 +383,7 @@ class pyMAP(object):
         return s
 
     def init( self ):
-        pyMAP.libexec.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
+        pyMAP.libexec.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
 
 
@@ -387,9 +394,48 @@ class pyMAP(object):
 
 
     def update_states(self, t, dt):
-        pyMAP.libexec.map_update_states(c_float(t), c_int(dt), self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
+        pyMAP.libexec.map_update_states(c_float(t), c_int(dt), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
 
+
+    def calc_output(self, t):
+        pyMAP.libexec.map_calc_output(c_float(t), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status )
+        if self.ierr.value != 0 :
+            print(self.status.value)
+
+
+    def get_output(self):
+        size_x, size_y, size_z = self.f_type_y.contents.Fx_Len, self.f_type_y.contents.Fy_Len, self.f_type_y.contents.Fz_Len
+        arr_x, arr_y, arr_z = [None]*size_x, [None]*size_y, [None]*size_z
+        fx = [self.f_type_y.contents.Fx[j] for j in range(size_x)]
+        fy = [self.f_type_y.contents.Fy[j] for j in range(size_y)]
+        fz = [self.f_type_y.contents.Fz[j] for j in range(size_z)]        
+        return fx, fy, fz
+
+
+    def get_output_labels(self):
+        size = self.f_type_y.contents.WriteOutput_Len + self.f_type_y.contents.wrtOutput_Len
+        string_buffers = [create_string_buffer(16) for i in range(size)]
+        pointers = (c_char_p*size)(*map(addressof, string_buffers))
+        pyMAP.libexec.map_get_header_string(None, pointers, self.f_type_d)
+        return [s.value for s in string_buffers]
+
+    
+    def get_output_units(self):
+        size = self.f_type_y.contents.WriteOutput_Len + self.f_type_y.contents.wrtOutput_Len
+        string_buffers = [create_string_buffer(16) for i in range(size)]
+        pointers = (c_char_p*size)(*map(addressof, string_buffers))
+        pyMAP.libexec.map_get_unit_string(None, pointers, self.f_type_d)
+        return [s.value for s in string_buffers]
+    
+    
+    def get_output_buffer(self):
+        size_float, size_double = self.f_type_y.contents.WriteOutput_Len, self.f_type_y.contents.wrtOutput_Len
+        arr_float, arr_double = [None]*size_float, [None]*size_double
+        arr_float = [self.f_type_y.contents.WriteOutput[j] for j in range(size_float)]
+        arr_double = [self.f_type_y.contents.wrtOuput[j] for j in range(size_double)]
+        return arr_float + arr_double
+    
 
     # Calls function in main.c and fordatamanager.c to delete insteads of c structs. First, the malloc'ed arrays need to vanish
     # gracefully; we accomplish this by calling MAP_End(...) routine. Then, the structs themself are deleted. Order is important.
@@ -402,11 +448,8 @@ class pyMAP(object):
     # MAP_EXTERNCALL void MAP_Output_Delete( InputData* y )
     # MAP_EXTERNCALL void MAP_OtherState_Delete( ModelData* data )
     def end(self):
-        pyMAP.libexec.map_end(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
-
-
-
-    
+        pyMAP.libexec.map_end(self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
+ 
 
     # Set a name for the MAP summary file. Does not need to be called. If not called, the default name is 'outlist.map.sum'
     def summary_file(self, echo_file):
@@ -690,6 +733,14 @@ class pyMAP(object):
             print(self.status.value)
             self.end( )
             sys.exit('MAP terminated premature.')    
+
+
+    #def offset_fairlead(self,x,y,z, idx):
+    #    pyMAP.libexec.map_offset_fairlead(self.f_type_u, c_int(idx), x, y, z, self.status, pointer(self.ierr) )
+    #    if self.ierr.value != 0 :
+    #        print(self.status.value)
+    #        self.end( )
+    #        sys.exit('MAP terminated premature.')   
 
     def read_file( self, fileName ):
         with open(fileName) as f:
