@@ -41,7 +41,6 @@ setup(
     install_requires=[
         'matplotlib', 
         'numpy',
-        'future', 
     ],
     zip_safe=False
 )

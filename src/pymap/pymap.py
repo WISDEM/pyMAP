@@ -21,14 +21,13 @@ Wrapper for MAP DLL
 # specific language governing permissions and limitations            
 # under the License.                                             
 
-from __future__ import print_function
 
 
 import numpy as np
 import sys
 from ctypes import *
 import os
-import six
+
 
 from distutils.sysconfig import get_config_var
 
@@ -331,9 +330,10 @@ class pyMAP(object):
         self._WtrDepth    = None
         self._WtrDens     = None
         self._filename    = None
+        self._K_lin       = None # Linear stiffness matrix
+        self._K_lin_point = None # Point where linear stiffness matrix was computed
         self.Nodes=[]
      
-        
         # Wrapper data
         self.f_type_d       = self.CreateDataState()
         self.f_type_u       = self.CreateInputState( )
@@ -456,7 +456,7 @@ class pyMAP(object):
 
     # Set a name for the MAP summary file. Does not need to be called. If not called, the default name is 'outlist.map.sum'
     def summary_file(self, echo_file):
-        self.f_type_init.contents.summaryFileName = six.b( echo_file )
+        self.f_type_init.contents.summaryFileName = echo_file.encode('utf-8')
         pyMAP.libexec.map_set_summary_file_name(self.f_type_init, self.status, pointer(self.ierr) )
 
 
@@ -867,16 +867,16 @@ class pyMAP(object):
 
         # --- Load input lines into library
         for line in sCabLib:
-            self.f_type_init.contents.libraryInputLine =  six.b(line+'\n\0')
+            self.f_type_init.contents.libraryInputLine =  (line+'\0').encode('utf-8')
             pyMAP.libexec.map_add_cable_library_input_text(self.f_type_init)                    
         for line in sNodes:
-            self.f_type_init.contents.nodeInputLine = six.b(line+'\n\0')
+            self.f_type_init.contents.nodeInputLine = (line+'\0').encode('utf-8')
             pyMAP.libexec.map_add_node_input_text(self.f_type_init)
         for line in sProps:
-            self.f_type_init.contents.elementInputLine =six.b(line+'\n\0')
+            self.f_type_init.contents.elementInputLine =(line+'\0').encode('utf-8')
             pyMAP.libexec.map_add_line_input_text(self.f_type_init)
         for line in sOpts:
-            self.f_type_init.contents.optionInputLine = six.b(line+'\n\0')
+            self.f_type_init.contents.optionInputLine = (line+'\0').encode('utf-8')
             pyMAP.libexec.map_add_options_input_text(self.f_type_init)            
 
     # --------------------------------------------------------------------------------}
@@ -904,6 +904,55 @@ class pyMAP(object):
         ax.set_zlabel('Z [m]')        
         return fig, ax
                 
+class Vessel:
+    time = []
+    x = []
+    y = []
+    z = []
+    phi = []
+    the = []
+    psi = []
+    out = []
+
+
+def get_vessel_column_index(name,out_chanel):
+    index = [0,0,0,0,0,0,0]
+    fp = open(name) 
+    for i,line in enumerate(fp):
+        if i==6:
+            words = line.split()
+            for j in range(0,len(words)):
+                if words[j]=='PtfmTDxi' or words[j]=='PtfmSurge':
+                    index[0] = j;
+                if words[j]=='PtfmTDyi' or words[j]=='PtfmSway':
+                    index[1] = j;
+                if words[j]=='PtfmTDzi' or words[j]=='PtfmHeave':
+                    index[2] = j;
+                if words[j]=='PtfmRDxi' or words[j]=='PtfmRoll':
+                    index[3] = j;
+                if words[j]=='PtfmRDyi' or words[j]=='PtfmPitch':
+                    index[4] = j;
+                if words[j]=='PtfmRDzi' or words[j]=='PtfmYaw':
+                    index[5] = j;
+                if words[j]==out_chanel:
+                    index[6] = j;
+    fp.close()
+    return index
+
+
+def set_vessel_prescribed_motion(table,index):
+    vessel = Vessel()
+    N = 1000#len(table)
+    vessel.time = [float(table[i][0]) for i in range(8,N)]
+    vessel.x = [float(table[i][index[0]]) for i in range(8,N)]
+    vessel.y = [float(table[i][index[1]]) for i in range(8,N)]
+    vessel.z = [float(table[i][index[2]]) for i in range(8,N)]
+    vessel.phi = [float(table[i][index[3]]) for i in range(8,N)]
+    vessel.the = [float(table[i][index[4]]) for i in range(8,N)]
+    vessel.psi = [float(table[i][index[5]]) for i in range(8,N)]    
+    vessel.out = [float(table[i][index[6]]) for i in range(8,N)]    
+    return vessel
+
 
 
 def translateLoadsJacobian(JS, r0, FS0):
