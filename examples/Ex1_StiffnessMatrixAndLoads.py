@@ -85,6 +85,7 @@ def main(test=False):
 
     # --- Output 
     if not test:
+        print(moor)
         print("\nLinearized stiffness matrix with 0.0 vessel displacement:\n")
         print(K)
         print("\nLinearized stiffness matrix with %2.2f surge vessel displacement:\n"%(surge))

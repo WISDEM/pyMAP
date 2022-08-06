@@ -1,3 +1,6 @@
+"""
+Wrapper for MAP DLL
+"""
 #   Copyright (C) 2014 mdm                                     
 #   map[dot]plus[dot]plus[dot]help[at]gmail                     
 #                                                              
@@ -314,8 +317,13 @@ class pyMAP(object):
         if pyMAP.libexec is None:
             pyMAP.initLib(dllFileName)
         
-        self.ierr = c_int(0)
-        self.status = create_string_buffer(1024)
+        # Misc Data
+        self._gravity     = None
+        self._WtrDepth    = None
+        self._WtrDens     = None
+        self._filename    = None
+     
+        
         # Wrapper data
         self.f_type_d       = self.CreateDataState()
         self.f_type_u       = self.CreateInputState( )
@@ -327,8 +335,45 @@ class pyMAP(object):
         self.f_type_initout = self.CreateInitoutState( )
         pyMAP.libexec.set_init_to_null(self.f_type_init, self.status, pointer(self.ierr) )
         pyMAP.libexec.map_initialize_msqs_base(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout)
-        self.summary_file('outlist.map.sum')
+        
+        # Read input file (either OpenFAST or MAP)
+        if filename is not None:
+            ext = os.path.splitext(filename)[1].lower()
+            if ext=='.fst':
+                raise NotImplementedError('Reading a fst file to extract main data')
+            else:
+                # Assume that it's a MAP input file
+                pass
 
+            self.read_file(filename)
+            sumFile = os.path.splitext(filename)[0]+'.map.sum'
+
+        # Set summary file
+        if sumFile is None:
+            sumFile = 'outlist.map.sum'
+        self.summary_file(sumFile)
+
+        # Set env conditions if provided or read from file
+        if WtrDepth is not None:
+            self.map_set_sea_depth(WtrDepth)  # m
+        if gravity is not None:
+            self.map_set_gravity(gravity)     # m/s^2
+        if WtrDens is not None:
+            self.map_set_sea_density(WtrDens) # kg/m^3
+        # If all inputs have been provided, initialize
+        if self._WtrDens is not None and self._WtrDepth is not None and self._gravity is not None:
+            if self._filename is not None:
+                self.init()
+
+    def __repr__(self):
+        s ='<{} object> with attributes:\n'.format(type(self).__name__)
+        #s+='|- Nodes: {}\n'.format(len(self.Nodes))
+        #for n in self.Nodes:
+        #    s+='|   {}\n'.format(n)
+        s+='|- _WtrDepth: {}\n'.format(self._WtrDepth)
+        s+='|- _WtrDens : {}\n'.format(self._WtrDens)
+        s+='|- _gravity : {}\n'.format(self._gravity)
+        return s
 
     def init( self ):
         pyMAP.libexec.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
@@ -341,8 +386,8 @@ class pyMAP(object):
         return size
 
 
-    def update_states(self, t, interval):
-        pyMAP.libexec.map_update_states(c_float(t), c_int(interval), self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
+    def update_states(self, t, dt):
+        pyMAP.libexec.map_update_states(c_float(t), c_int(dt), self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
 
 
@@ -361,11 +406,12 @@ class pyMAP(object):
 
 
 
-    # Set a name for the MAP summary file. Does not need to be called. If not called, the default name is 'outlist.sum.map'
+    
+
+    # Set a name for the MAP summary file. Does not need to be called. If not called, the default name is 'outlist.map.sum'
     def summary_file(self, echo_file):
         self.f_type_init.contents.summaryFileName = six.b( echo_file )
         pyMAP.libexec.map_set_summary_file_name(self.f_type_init, self.status, pointer(self.ierr) )
-
 
 
     # Calls function in fortdatamanager.c to create instance of c structs
@@ -431,12 +477,15 @@ class pyMAP(object):
 
 
     def map_set_sea_depth( self, depth ):
+         self._WtrDepth=depth
          pyMAP.libexec.map_set_sea_depth( self.f_type_p, depth )
 
     def map_set_gravity( self, g ):
+        self._gravity=g
         pyMAP.libexec.map_set_gravity( self.f_type_p, g )
 
     def map_set_sea_density( self, rho ):
+        self._WtrDens=rho
         pyMAP.libexec.map_set_sea_density( self.f_type_p, rho )
 
     def plot_x( self, lineNum, length ) :
@@ -701,6 +750,7 @@ class pyMAP(object):
     def plot(self, numPoints, fig=None, ax=None, colors=None, ls='-'):
         """ plot the mooring profile """
         import matplotlib.pyplot as plt
+        import numpy as np
         from mpl_toolkits.mplot3d import Axes3D
 
         if fig is None:
