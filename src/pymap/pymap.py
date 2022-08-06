@@ -23,6 +23,8 @@ Wrapper for MAP DLL
 
 from __future__ import print_function
 
+
+import numpy as np
 import sys
 from ctypes import *
 import os
@@ -706,9 +708,10 @@ class pyMAP(object):
             sys.exit('MAP terminated premature.')
         return self.val
 
-    def linear( self, epsilon ) :
+
+    def linear( self, epsilon=1.e-3) :
         """
-        Return linear matrix, transpose of stiffness matrix
+        Return linear matrix, transpose of stiffness matrix at (0,0,0)
         """
         array = POINTER(POINTER(c_double))
         array = pyMAP.libexec.map_linearize_matrix( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, epsilon, pointer(self.ierr), self.status)        
@@ -718,7 +721,48 @@ class pyMAP(object):
            sys.exit('MAP terminated premature.')
         arr = [[array[j][i] for i in range(6)] for j in range(6)]
         pyMAP.libexec.map_free_linearize_matrix(array)        
-        return arr
+        # Stiffness matrix is defined at (0,0,0)
+        K_0   = np.array(arr) # NOTE: this is a transposed of a stiffness matrix !!!
+        return K_0
+
+
+    def stiffness_matrix(self, epsilon=1.e-3, point=None) :
+        # Stiffness matrix at (0,0,0)
+        K_0 = self.linear(epsilon).T # NOTE: transpose needed
+
+        # Operating point loads
+        F_op_0 = self.f_op()
+
+        if point is None:
+            K_D    = K_0
+            F_op_D = F_op_0
+        else:
+            # Transfer to requested reference point
+            r_S  = np.array((0,0,0)) # Source # TODO is it OK when vessel has been displaced?
+            r_D = np.array(point)    # Destination
+            r0  = r_S - r_D  # 
+            K_D = - translateLoadsJacobian(-K_0, r0, F_op_0[:3]) # Jacobians are -K
+            F_op_D = F_op_0.copy()
+            F_op_D[3:6] += np.cross(r0,F_op_0[:3])
+        self._K_lin       = K_D
+        self._K_lin_point = point
+        return K_D, F_op_D
+
+    def f_op(self) :
+        try:
+            array = POINTER(c_double)
+            array = pyMAP.libexec.map_f_op( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, pointer(self.ierr), self.status)        
+            if self.ierr.value != 0 :
+               print(self.status.value)
+               self.end( )
+               sys.exit('MAP terminated premature.')
+            arr = [array[i] for i in range(6)]
+            pyMAP.libexec.map_free_f_op(array)        
+            Fop   = np.array(arr)
+        except:
+            print('[WARN] MAP f_op not available in this version of the library')
+            Fop=np.zeros(6)
+        return Fop
     
 
     def displace_vessel(self,x,y,z,phi,the,psi) :
@@ -819,3 +863,44 @@ class pyMAP(object):
         ax.set_zlabel('Z [m]')        
         return fig, ax
                 
+
+
+def translateLoadsJacobian(JS, r0, FS0):
+    """ 
+    Transfer Jacobians of loads at a source point "S" to a destination point "D"
+    assuming a rigid body motion between the source and destination point
+
+    INPUTS:
+    - JS: Jacobian of loads at the source point, 6x6 array dF_S/dx_S
+          where F_S  = (f_x, f_y, f_z, m_x, m_y, m_z)_S
+          where dx_S = (dx, dy, dz, dt_x, dt_y, dt_z)_S (displacement and small rotations)
+    - r0 = rS-rD : 3-vector from the destination point to the source point
+    - FS0: 3-vector of the operating point forces at the source node
+
+    OUTPUTS:
+    - JD: Jacobian of loads at the source point, 6x6 array dF_S/dx_S
+
+    Reference:
+       See Branlard, Jonkman, Brown to be published 2022
+
+    """
+    def skew(x):
+        """ Returns the skew symmetric matrix M, such that: cross(x,v) = M v 
+        [ 0, -z , y]
+        [ z,  0 ,-x]
+        [-y,  x , 0]
+        """
+        x=np.asarray(x).ravel()
+        return np.array([[0, -x[2], x[1]],[x[2],0,-x[0]],[-x[1],x[0],0]])
+    r0til  = skew(r0)
+    FS0til = skew(FS0)
+    I3 = np.eye(3)
+    Z3 = np.zeros((3,3))
+    T1 = np.block([ [ I3   ,  Z3 ],
+                    [ r0til,  I3 ]])
+    T2 = np.block([ [ I3   ,-r0til ],
+                    [ Z3   ,  I3 ]])
+    T3 = np.block([ [ Z3   ,  Z3 ],
+                    [ Z3   ,  FS0til.dot(r0til) ] ])
+    JD = T1.dot(JS.dot(T2)) + T3
+    return JD

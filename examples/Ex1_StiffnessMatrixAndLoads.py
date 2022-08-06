@@ -55,14 +55,16 @@ def main(test=False):
     
     # --- Linearization with no displacement
     epsilon = 1e-5 # finite difference epsilon
-    K = moor.linear(epsilon)    
+    Kt = moor.linear(epsilon)     # transpose of stiffness matrix
+    K, f0 = moor.stiffness_matrix(epsilon=epsilon, point=(0,0,0))
      
     # --- Linearization with a given surge displacement
     surge = 5.0 # 5 meter surge displacements
     moor.displace_vessel(surge,0,0,0,0,0)
     #moor.update_states(t=0.0, dt=0) TODO
     moor.update_states(0.0, 0)
-    K2 = moor.linear(epsilon)    
+    Kt2 = moor.linear(epsilon)    
+    K2, f02 = moor.stiffness_matrix(epsilon=epsilon, point=(0,0,0))
 
     # --- Find equilibrium
     # We need to call update states after linearization to find the equilibrium
@@ -109,7 +111,7 @@ def main(test=False):
 
 
 
-    return K, K2, H, V, fx, fy, fz, Ha, Va, fxa, fya, fza
+    return K, K2, Kt, Kt2, H, V, fx, fy, fz, Ha, Va, fxa, fya, fza
 
 if __name__ == '__main__':
     main()
