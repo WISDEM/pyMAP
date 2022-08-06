@@ -1162,9 +1162,9 @@ MAP_ERROR_CODE set_model_options_list(Domain* domain, InitializationData* init_d
     success = check_repeat_flag(parsed, &domain->model_options); CHECKERRQ(MAP_FATAL_34);
     success = check_ref_position_flag(parsed, &domain->vessel.ref_origin); CHECKERRQ(MAP_FATAL_36);
     success = check_uncaught_flag(parsed);       
-    //if (success) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_WARNING_1, "word: <%s>", parsed->entry[0]->data);
-    //};
+    if (success) {
+      set_universal_error_with_message(map_msg, ierr, MAP_WARNING_1, "word: <%s>", parsed->entry[0]->data);
+    };
 
     MAP_END_ERROR_LOG;
    
@@ -1295,7 +1295,8 @@ MAP_ERROR_CODE initialize_cable_library_variables(Domain* domain, MAP_ParameterT
 
     library_iter->a = area;
     if (fabs(library_iter->omega)<=1.0) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_WARNING_5, "omega = %f <= 1.0", library_iter->omega);
+      set_universal_error_with_message(map_msg, ierr, MAP_WARNING_5, 
+                                       "omega = %f <= 1.0", library_iter->omega);
     };
   };
   list_iterator_stop(&domain->library); /* ending the iteration "session" */    
@@ -1783,8 +1784,8 @@ MAP_ERROR_CODE allocate_types_for_nodes(MAP_InputType_t* u_type, MAP_ConstraintS
           } else if (biseqcstrcaseless(parsed->entry[i_parsed],"VESSEL")) {
             vessel_num++;
             break; /* break the while-loop because the agenda is reached */
-	    //} else {
-            //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_25, "Value: <%s>", parsed->entry[i_parsed]->data);
+          } else {
+            set_universal_error_with_message(map_msg, ierr, MAP_FATAL_25, "Value: <%s>", parsed->entry[i_parsed]->data);
           };
         };          
         next++;
@@ -1929,8 +1930,8 @@ MAP_ERROR_CODE set_node_list(const MAP_ParameterType_t* p_type,  MAP_InputType_t
             u_reference_point.y = &node_iter->position_ptr.y; /* create reference to input type; this is the convenient update point when u is interpolated in FAST */
             u_reference_point.z = &node_iter->position_ptr.z; /* create reference to input type; this is the convenient update point when u is interpolated in FAST */
             list_append(&domain->u_update_list, &u_reference_point); /* push onto the update list */
-	    //} else {
-            //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_25, "Value: <%s>", parsed->entry[i_parsed]->data);
+          } else {
+            set_universal_error_with_message(map_msg, ierr, MAP_FATAL_25, "Value: <%s>", parsed->entry[i_parsed]->data);
           };
           next++;
         } else if (next==2) { /* set initial X node position values */
@@ -1947,7 +1948,7 @@ MAP_ERROR_CODE set_node_list(const MAP_ParameterType_t* p_type,  MAP_InputType_t
           alias = bformat("Z[%d]", i+1);                          
           if (biseqcstrcaseless(parsed->entry[i_parsed],"DEPTH")) {         
             if (node_iter->type!=FIX) { /* can only use 'DEPTH' flag in input file for FIX (anchor) nodes */
-              //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_71, "Value: <%s>", parsed->entry[i_parsed]->data);
+              set_universal_error_with_message(map_msg, ierr, MAP_FATAL_71, "Value: <%s>", parsed->entry[i_parsed]->data);
             } else {
               value_string = bformat("%f", -depth);                          
               success = set_vartype_ptr("[m]", alias, i, &node_iter->position_ptr.z, value_string); CHECKERRQ(MAP_FATAL_19);
@@ -2167,8 +2168,8 @@ MAP_ERROR_CODE set_line_option_flags(struct bstrList* words, int* i_parsed, Line
     if (is_numeric((char*)words->entry[index]->data)) {
       line_ptr->segment_size = (int)atoi((char*)words->entry[index]->data);
       *i_parsed = index;
-      //} else { /* should not cancel the simulation; simply ignore it */      
-      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_18, "Option <%s>", words->entry[index]->data);
+    } else { /* should not cancel the simulation; simply ignore it */      
+      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_18, "Option <%s>", words->entry[index]->data);
     };          
   } else if (biseqcstrcaseless(words->entry[index], "LAY_LENGTH")) {
     line_ptr->options.lay_length_flag = true;
@@ -2183,8 +2184,8 @@ MAP_ERROR_CODE set_line_option_flags(struct bstrList* words, int* i_parsed, Line
       line_ptr->options.damage_time_flag = true;
       line_ptr->damage_time = (double)atof((char*)words->entry[index]->data);
       *i_parsed = index;
-      //} else { /* should not cancel the simulation; simply ignore it */      
-      //set_universal_error_with_message(map_msg, ierr, MAP_ERROR_1, "Option <%s>", words->entry[index]->data);
+    } else { /* should not cancel the simulation; simply ignore it */      
+      set_universal_error_with_message(map_msg, ierr, MAP_ERROR_1, "Option <%s>", words->entry[index]->data);
     };          
   } else if (biseqcstrcaseless(words->entry[index], "DIAGNOSTIC")) {
     do {
@@ -2197,12 +2198,12 @@ MAP_ERROR_CODE set_line_option_flags(struct bstrList* words, int* i_parsed, Line
       line_ptr->options.diagnostics_flag = true;
       line_ptr->diagnostic_type = (int)atoi((char*)words->entry[index]->data);
       *i_parsed = index;
-      //} else { /* should not cancel the simulation; simply ignore it */      
-      //set_universal_error_with_message(map_msg, ierr, MAP_ERROR_14, "Option <%s>", words->entry[index]->data);
+    } else { /* should not cancel the simulation; simply ignore it */      
+      set_universal_error_with_message(map_msg, ierr, MAP_ERROR_14, "Option <%s>", words->entry[index]->data);
     };          
-    //} else {
+  } else {
     /* should not cancel the simulation; simply ignore it */
-    //set_universal_error_with_message(map_msg, ierr, MAP_WARNING_3, "Option <%s>", words->entry[index]->data);
+    set_universal_error_with_message(map_msg, ierr, MAP_WARNING_3, "Option <%s>", words->entry[index]->data);
   };
   return MAP_SAFE;
 };
@@ -2230,7 +2231,7 @@ MAP_ERROR_CODE set_line_list(MAP_ConstraintStateType_t* z_type, Domain* domain, 
   z_type->V = malloc(z_type->V_Len*sizeof(double));
 
   if (z_type->H==NULL || z_type->V==NULL) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_53, "Failed allocation of a z_type");
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_53, "Failed allocation of a z_type");
     return MAP_FATAL;
   };
   
@@ -2430,19 +2431,19 @@ MAP_ERROR_CODE set_output_list(Domain* domain, MAP_InitOutputType_t* io_type, ch
     };
 
     if (line_iter->options.azimuth_flag) {
-      success = push_variable_to_output_list(y_list, line_num, &line_iter->psi, "psi", "[m]");
+      success = push_variable_to_output_list(y_list, line_num, &line_iter->psi, "psi", "[rad]");
       io_type->writeOutputHdr_Len++;
       io_type->writeOutputUnt_Len++;
     };
 
     if (line_iter->options.altitude_flag) {
-      success = push_variable_to_output_list(y_list, line_num, &line_iter->alpha, "alpha", "[m]");
+      success = push_variable_to_output_list(y_list, line_num, &line_iter->alpha, "alpha", "[rad]");
       io_type->writeOutputHdr_Len++;
       io_type->writeOutputUnt_Len++;
     };
 
     if (line_iter->options.altitude_anchor_flag) {
-      success = push_variable_to_output_list(y_list, line_num, &line_iter->alpha_at_anchor, "alpha_a", "[m]");
+      success = push_variable_to_output_list(y_list, line_num, &line_iter->alpha_at_anchor, "alpha_a", "[rad]");
       io_type->writeOutputHdr_Len++;
       io_type->writeOutputUnt_Len++;
     };
@@ -2590,7 +2591,7 @@ MAP_ERROR_CODE associate_line_with_cable_property(Line* line_ptr, Domain* domain
   };
   list_iterator_stop(&domain->library); /* ending the iteration session */  
   if (line_ptr->line_property==NULL) {        
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_27, "No libraries match <%s>.", word);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_27, "No libraries match <%s>.", word);
     return MAP_FATAL;
   };
   return MAP_SAFE;
@@ -2610,11 +2611,11 @@ MAP_ERROR_CODE associate_line_with_anchor_node(Line* line_ptr, Domain* domain, c
     node_iter = (Node*)list_get_at(&domain->node, node_num-1);
     line_ptr->anchor = node_iter; /* create the associate with anchor here */
     if (!node_iter) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_30, "Line %d.", line_num);
+      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_30, "Line %d.", line_num);
       return MAP_FATAL;
     };
   } else {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_28, "Line %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_28, "Line %d.", line_num);
     return MAP_FATAL;
   };
   return MAP_SAFE;
@@ -2634,11 +2635,11 @@ MAP_ERROR_CODE associate_line_with_fairlead_node(Line* line_ptr, Domain* domain,
     node_iter = (Node*)list_get_at(&domain->node, node_num-1);
     line_ptr->fairlead = node_iter; /* create the associate with anchor here */
     if (!node_iter) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_31, "Line %d.", line_num);
+      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_31, "Line %d.", line_num);
       return MAP_FATAL;
     };
   } else {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_29, "Line %d.", line_num);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_29, "Line %d.", line_num);
     return MAP_FATAL;
   };
   return MAP_SAFE;
@@ -2794,8 +2795,8 @@ MAP_ERROR_CODE print_help_to_screen()
   printf("      -v_anch,       --Vertical force at anchor (does NOT include applied forces) [N]\n");
   printf("      -tension_fair, --Line force-magnitude at fairlead (include applied loads) [N]\n");
   printf("      -tension_anch, --Line force-magnitude at anchor (include applied loads) [N]\n");
-  printf("      -azimuth,      --Line lateral offset angle global X axis [deg]\n");
-  printf("      -altitude,     --Line inclination angle relative to global XY plane at fairlead [deg]\n");
+  printf("      -azimuth,      --Line lateral offset angle global X axis [rad]\n");
+  printf("      -altitude,     --Line inclination angle relative to global XY plane at fairlead [rad]\n");
   printf("      -lay_length,   --Length of line on seabed [m]\n");
   printf("      -line_tension, -- \n");
   printf("    Model features:\n");

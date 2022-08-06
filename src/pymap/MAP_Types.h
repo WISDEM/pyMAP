@@ -8,18 +8,18 @@
 #define _MAP_TYPES_H
 
 
-#if defined(_MSC_VER)
+#ifdef _WIN32 //define something for Windows (32-bit)
+#  include "stdbool.h"
+#  define CALL __declspec( dllexport )
+#elif _WIN64 //define something for Windows (64-bit)
+#  include "stdbool.h"
+#  define CALL __declspec( dllexport )
+#elif _MSC_VER
   typedef int bool;
   #define false 0
   #define true 1
-//#  include "stdbool.h"
 #else
-#  include "stdbool.h"
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-#  define CALL __declspec( dllexport )
-#else
+#  include <stdbool.h>
 #  define CALL 
 #endif
 
@@ -35,6 +35,7 @@
     char node_input_str[255] ;
     char line_input_str[255] ;
     char option_input_str[255] ;
+
   } MAP_InitInputType_t ;
   typedef struct MAP_InitOutputType {
     void * object ;
@@ -44,11 +45,16 @@
     char * writeOutputHdr ;     int writeOutputHdr_Len ;
     char * writeOutputUnt ;     int writeOutputUnt_Len ;
 
+
   } MAP_InitOutputType_t ;
   typedef struct MAP_ContinuousStateType {
     void * object ;
     double dummy ;
   } MAP_ContinuousStateType_t ;
+  typedef struct MAP_DiscreteStateType {
+    void * object ;
+    double dummy ;
+  } MAP_DiscreteStateType_t ;
   typedef struct MAP_OtherStateType {
     void * object ;
     double * H ;     int H_Len ;
@@ -83,6 +89,8 @@
     double rho_sea ;
     double dt ;
 
+
+    int numOuts ;
 
   } MAP_ParameterType_t ;
   typedef struct MAP_InputType {

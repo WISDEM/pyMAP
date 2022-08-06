@@ -154,7 +154,7 @@ MAP_ERROR_CODE set_line_variables_pre_solve(Domain* domain, char* map_msg, MAP_E
     /* angle of azimuth */
     success = set_psi(line_iter, map_msg, ierr); 
     if (success!=MAP_SAFE) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_WARNING_6, "Line number %d", i);
+      set_universal_error_with_message(map_msg, ierr, MAP_WARNING_6, "Line number %d", i);
     };
     i++;
   };
@@ -574,15 +574,15 @@ MAP_ERROR_CODE solve_line(Domain* domain, const float time, char* map_msg, MAP_E
     //   line_iter->l = MAP_HORIZONTAL_TOL;
     // } else if (line_iter->l<0.0) {
 	if (line_iter->l<0.0) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_54, "Line segment %d, l = %d [m].", n, line_iter->l);
+      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_54, "Line segment %d, l = %d [m].", n, line_iter->l);
       break; 
     } else if (line_iter->h<=-MACHINE_EPSILON) {
-      //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_55, "Line segment %d, h = %d [m].", n, line_iter->h);
+      set_universal_error_with_message(map_msg, ierr, MAP_FATAL_55, "Line segment %d, h = %d [m].", n, line_iter->h);
       break; 
     } else if (line_iter->line_property->omega>0.0) {
       success = check_maximum_line_length(line_iter, line_iter->options.omit_contact, map_msg, ierr);
       if (success) {        
-        //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "Line segment %d.", n);
+        set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "Line segment %d.", n);
         break;
       };
     };    
@@ -598,7 +598,7 @@ MAP_ERROR_CODE solve_line(Domain* domain, const float time, char* map_msg, MAP_E
     */
     // /* check if L^2 norm is small. If not, MAP converged prematurely */
     // if (line_iter->residual_norm>1e-3) {
-    //   //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_90, "Line segment %d.", n);
+    //   set_universal_error_with_message(map_msg, ierr, MAP_FATAL_90, "Line segment %d.", n);
     //   break;      
     // };
     n++;
@@ -684,7 +684,7 @@ MAP_ERROR_CODE check_maximum_line_length(Line* line, const bool contact_flag, ch
 
   LMax = l - EA/W + sqrt(pow((EA/W),2) + 2.0*h*EA/W);
   if (Lu>=LMax && contact_flag==false) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "LMax = %f [m].", LMax);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_59, "LMax = %f [m].", LMax);
     return MAP_FATAL;
   };
   return MAP_SAFE;
@@ -830,6 +830,31 @@ MAP_ERROR_CODE increment_psi_dof_by_delta(MAP_InputType_t* u_type, const Vessel*
   return MAP_SAFE;
 };
 
+
+
+/* Compute force at current operating point using a similar interface than fd_*_sequence */
+MAP_ERROR_CODE f_op_sequence(MAP_OtherStateType_t* other_type, MAP_ParameterType_t* p_type, MAP_InputType_t* u_type, MAP_OutputType_t* y_type, MAP_ConstraintStateType_t* z_type, Fd* force, const int size, char* map_msg, MAP_ERROR_CODE* ierr)
+{
+  MAP_ERROR_CODE success = MAP_SAFE;
+  Domain* domain = other_type->object;
+  Vessel* vessel = &domain->vessel;
+
+  MAP_BEGIN_ERROR_LOG;
+
+  /* Solve system */
+  if (domain->MAP_SOLVE_TYPE==MONOLITHIC) {
+    success = line_solve_sequence(domain, p_type, 0.0, map_msg, ierr);
+  } else {
+    success = node_solve_sequence(domain, p_type, u_type, z_type, other_type, (float)-999.9, map_msg, ierr); // @todo CHECKERRQ()
+  };    
+  success = set_force_plus(y_type->Fx, force->fx, size); CHECKERRQ(MAP_FATAL_61);
+  success = set_force_plus(y_type->Fy, force->fy, size); CHECKERRQ(MAP_FATAL_61);
+  success = set_force_plus(y_type->Fz, force->fz, size); CHECKERRQ(MAP_FATAL_61);
+  success = set_moment_plus(y_type, vessel, force->mx, force->my, force->mz, size); CHECKERRQ(MAP_FATAL_61);
+  
+  MAP_END_ERROR_LOG;
+  MAP_RETURN_STATUS(*ierr);
+};
 
 
 MAP_ERROR_CODE fd_x_sequence(MAP_OtherStateType_t* other_type, MAP_ParameterType_t* p_type, MAP_InputType_t* u_type, MAP_OutputType_t* y_type, MAP_ConstraintStateType_t* z_type, Fd* force, const double epsilon, const int size, const double* original_pos, char* map_msg, MAP_ERROR_CODE* ierr)
@@ -1105,6 +1130,22 @@ MAP_ERROR_CODE calculate_stiffness(double* K, Fd* force, const double delta, con
   };
   return MAP_SAFE;
 };
+
+MAP_ERROR_CODE calculate_sumforce(double* F, Fd* force, const int size)
+{  
+  int i = 0;
+
+  for (i=0 ; i<size ; i++) {
+    F[0] += (force->fx[i]);
+    F[1] += (force->fy[i]);
+    F[2] += (force->fz[i]);
+    F[3] += (force->mx[i]);
+    F[4] += (force->my[i]);
+    F[5] += (force->mz[i]);
+  };
+  return MAP_SAFE;
+};
+
 
 
 

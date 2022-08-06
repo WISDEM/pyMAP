@@ -215,7 +215,7 @@ MAP_EXTERNCALL void map_update_states(float t,
      domain->HEAD_U_TYPE = u_type;
 
      if (i!=u_type->x_Len) { /* raise error if the input array are exceeded */
-       //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_89, "u_type range: <%d>. Updated array range: <%d>", u_type->x_Len, i);
+       set_universal_error_with_message(map_msg, ierr, MAP_FATAL_89, "u_type range: <%d>. Updated array range: <%d>", u_type->x_Len, i);
        break;
      };
    //};
@@ -274,7 +274,7 @@ MAP_EXTERNCALL void map_calc_output(float t,
      domain->HEAD_U_TYPE = u_type;
      
      if (i != u_type->x_Len) { /* raise error if the input array are exceeded */
-       //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_89, "u_type range: <%d>. Updated array range: <%d>", u_type->x_Len, i);
+       set_universal_error_with_message(map_msg, ierr, MAP_FATAL_89, "u_type range: <%d>. Updated array range: <%d>", u_type->x_Len, i);
        break;
      };
    //};
@@ -378,6 +378,73 @@ MAP_EXTERNCALL void map_offset_vessel(MAP_OtherStateType_t* other_type, MAP_Inpu
 };
 
 
+/*  Return summed force (rigid body force at point (0,0,0)) based on current operating point displacements
+ *  Computed at the displaced vessel position
+ */
+MAP_EXTERNCALL double* map_f_op(MAP_InputType_t* u_type, MAP_ParameterType_t* p_type, MAP_OtherStateType_t* other_type, MAP_OutputType_t* y_type, MAP_ConstraintStateType_t* z_type, MAP_ERROR_CODE* ierr, char* map_msg)
+{
+  MAP_ERROR_CODE success = MAP_SAFE;
+  const int n = u_type->x_Len;
+  const int SIX = 6;
+  int i = 0;
+  Fd force;
+  double* F;
+ 
+  map_reset_universal_error(map_msg, ierr);
+
+  /* Summed force */
+  F = malloc(SIX*sizeof(double));
+  for (i=0 ; i<SIX ; i++) {
+    F[i] = 0.0;
+  };
+
+  /* All n forces */
+  force.fx = malloc(n*sizeof(double));
+  force.fy = malloc(n*sizeof(double));
+  force.fz = malloc(n*sizeof(double));
+  force.mx = malloc(n*sizeof(double));
+  force.my = malloc(n*sizeof(double));
+  force.mz = malloc(n*sizeof(double));  
+  
+  /* initialize stuff allocated above to zero */
+  for (i=0 ; i<n ; i++) {
+    force.fx[i] = 0.0;
+    force.fy[i] = 0.0;
+    force.fz[i] = 0.0;
+    force.mx[i] = 0.0;
+    force.my[i] = 0.0;
+    force.mz[i] = 0.0;
+  };
+    
+  MAP_BEGIN_ERROR_LOG; 
+  
+  /* Compute operating point force (required to transfer matrix to a different point */
+  success = f_op_sequence(other_type, p_type, u_type, y_type, z_type, &force, n, map_msg, ierr); CHECKERRQ(MAP_FATAL_62);
+  
+  /* Sum force */
+  success = calculate_sumforce(F, &force, n); CHECKERRQ(MAP_FATAL_64);
+
+  MAP_END_ERROR_LOG; 
+
+  MAPFREE(force.fx);
+  MAPFREE(force.fy);
+  MAPFREE(force.fz);
+  MAPFREE(force.mx);
+  MAPFREE(force.my);
+  MAPFREE(force.mz);
+   
+  return F;
+};
+
+MAP_EXTERNCALL void map_free_f_op(double* array)
+{
+  MAPFREE(array);
+};
+
+
+
+// NOTE: The matrix returned is the transposed of a stiffness matrix!
+// Computed at the displaced vessel position
 MAP_EXTERNCALL double** map_linearize_matrix(MAP_InputType_t* u_type, MAP_ParameterType_t* p_type, MAP_OtherStateType_t* other_type, MAP_OutputType_t* y_type, MAP_ConstraintStateType_t* z_type, double epsilon, MAP_ERROR_CODE* ierr, char* map_msg)
 {
   double* x_original = NULL;
@@ -440,6 +507,7 @@ MAP_EXTERNCALL double** map_linearize_matrix(MAP_InputType_t* u_type, MAP_Parame
     z_original[k] = u_type->z[k];      
   };
   
+  /* Compute (transpose of) stiffness matrix by perturbing component by component */
   for (i=0 ; i<SIX ; i++) { /* down, force direction changes */
     success = reset_force_to_zero(force.fx, force.fy, force.fz, force.mx, force.my, force.mz, n);
     if (i==0) {        
@@ -523,7 +591,7 @@ MAP_EXTERNCALL double* map_plot_x_array(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&domain->line, i);  
   
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
   } else if (line->options.linear_spring) {
     fairlead_x = *(line->fairlead->position_ptr.x.value);
     anchor_x = *(line->anchor->position_ptr.x.value);
@@ -601,7 +669,7 @@ MAP_EXTERNCALL double* map_plot_y_array(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&data->line, i);
   
   if (line==NULL) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
   } else if (line->options.linear_spring) {
     fairlead_y = *(line->fairlead->position_ptr.y.value);
     anchor_y = *(line->anchor->position_ptr.y.value);
@@ -678,7 +746,7 @@ MAP_EXTERNCALL double* map_plot_z_array(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&data->line, i);
   
   if (line==NULL){
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
   } else if (line->options.linear_spring) {
     fairlead_z = *(line->fairlead->position_ptr.z.value);
     anchor_z = *(line->anchor->position_ptr.z.value);
@@ -755,7 +823,7 @@ MAP_EXTERNCALL double map_residual_function_length(MAP_OtherStateType_t* other_t
   line = (Line*)list_get_at(&domain->line, i);
 
   if (line==NULL) {
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -794,7 +862,7 @@ MAP_EXTERNCALL double map_residual_function_height(MAP_OtherStateType_t* other_t
   line = (Line*)list_get_at(&domain->line, i);
 
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -831,7 +899,7 @@ MAP_EXTERNCALL double map_jacobian_dxdh(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&domain->line, i);
 
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -867,7 +935,7 @@ MAP_EXTERNCALL double map_jacobian_dxdv(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&domain->line, i);
   
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -903,7 +971,7 @@ MAP_EXTERNCALL double map_jacobian_dzdh(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&domain->line, i);
 
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -939,7 +1007,7 @@ MAP_EXTERNCALL double map_jacobian_dzdv(MAP_OtherStateType_t* other_type, int i,
   line = (Line*)list_get_at(&domain->line, i);
 
   if (line==NULL) {    
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: <%d>.", i);
     return -999.9;
   };
 
@@ -973,7 +1041,7 @@ MAP_EXTERNCALL void map_get_fairlead_force_2d(double* H, double* V, MAP_OtherSta
     *V = *(iter_line->V.value);
   } else {
     /* throw error: line out of range */
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
   };
 }
 
@@ -993,7 +1061,7 @@ MAP_EXTERNCALL void map_get_fairlead_force_3d(double* fx, double* fy, double* fz
     *fz = *(iter_line->V.value);
   } else {
     /* throw error: line out of range */
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
   };
 }
 
@@ -1011,7 +1079,7 @@ MAP_EXTERNCALL void map_get_anchor_force_2d(double* Ha, double* Va, MAP_OtherSta
     *Va = -(iter_line->V_at_anchor);
   } else {
     /* throw error: line out of range */
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
   };
 }
 
@@ -1031,7 +1099,7 @@ MAP_EXTERNCALL void map_get_anchor_force_3d(double* fxa, double* fya, double* fz
     *fza = -(iter_line->V_at_anchor);
   } else {
     /* throw error: line out of range */
-    //set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
+    set_universal_error_with_message(map_msg, ierr, MAP_FATAL_42, "Line out of range: %d.", index);
   };
 }
 
