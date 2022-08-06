@@ -317,7 +317,7 @@ class pyMAP(object):
         cls.val = c_double
 
 
-    def __init__( self, filename=None, WtrDepth=None, gravity=None, WtrDens=None, sumFile=None, dllFileName=None ) :
+    def __init__( self, filename=None, lines=None, WtrDepth=None, gravity=None, WtrDens=None, sumFile=None, dllFileName=None ) :
         """
 
         """
@@ -346,6 +346,8 @@ class pyMAP(object):
         pyMAP.libexec.set_init_to_null(self.f_type_init, self.status, pointer(self.ierr) )
         pyMAP.libexec.map_initialize_msqs_base(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout)
         
+
+        callInit = False
         # Read input file (either OpenFAST or MAP)
         if filename is not None:
             ext = os.path.splitext(filename)[1].lower()
@@ -356,7 +358,13 @@ class pyMAP(object):
                 pass
 
             self.read_file(filename)
+            callInit = True
             sumFile = os.path.splitext(filename)[0]+'.map.sum'
+
+        # Read input lines
+        if lines is not None:
+            self.read_list_input(lines)
+            callInit = True
 
         # Set summary file
         if sumFile is None:
@@ -370,9 +378,10 @@ class pyMAP(object):
             self.map_set_gravity(gravity)     # m/s^2
         if WtrDens is not None:
             self.map_set_sea_density(WtrDens) # kg/m^3
+
         # If all inputs have been provided, initialize
         if self._WtrDens is not None and self._WtrDepth is not None and self._gravity is not None:
-            if self._filename is not None:
+            if callInit:
                 self.init()
 
     def __repr__(self):
@@ -793,7 +802,6 @@ class pyMAP(object):
             lines = f.read().splitlines()
         self.read_list_input( lines )
 # 
-
                     
     def read_list_input(self, listIn):
         assert isinstance(listIn, list), 'Must input a python list of strings'

@@ -2,6 +2,7 @@
  - (Open a MAP input file)
  - Set a MAP input file via a list of strings
  - Perform linearization for various positions
+ - Compute stiffness matrix and operating point force at a given point
  - Compute fairlead loads 
  - Compute anchor loads 
  - Plot 3D lines
@@ -36,18 +37,8 @@ def main(test=False):
                    'repeat 240 120',
                    'ref_position 0 0 0']
 
-
-
-    #moor = pyMAP('inputs/baseline_2.map', WtrDepth=350, gravity=9.81, WtrDens=1025, dllFileName=dllFileName)
-    moor = pyMAP()
-
-    # TODO Use Init interface
-    moor.map_set_sea_depth(320)
-    moor.map_set_gravity(9.81)
-    moor.map_set_sea_density(1025.0)
-    moor.read_list_input(nrel5mw_oc4)
-    #moor.read_file("../test/NRELOffshrBsLine5MW_OC4.map")
-    moor.init( ) # TODO remove me
+    #moor = pyMAP(filename='inputs/NRELOffshrBsLine5MW_OC4.map', WtrDepth=320, WtrDens=1025, gravity=9.81, dllFileName=dllFileName)
+    moor = pyMAP(lines=nrel5mw_oc4, WtrDepth=320, WtrDens=1025, gravity=9.81)
 
     # --- Plot initial
     if not test:
@@ -61,29 +52,22 @@ def main(test=False):
     # --- Linearization with a given surge displacement
     surge = 5.0 # 5 meter surge displacements
     moor.displace_vessel(surge,0,0,0,0,0)
-    #moor.update_states(t=0.0, dt=0) TODO
-    moor.update_states(0.0, 0)
+    moor.update_states(t=0.0, dt=0)
     Kt2 = moor.linear(epsilon)    
     K2, f02 = moor.stiffness_matrix(epsilon=epsilon, point=(0,0,0))
 
     # --- Find equilibrium
     # We need to call update states after linearization to find the equilibrium
-    #moor.update_states(t=0.0, dt=0) TODO
-    moor.update_states(0.0, 0)
+    moor.update_states(t=0.0, dt=0)
     
     # --- Fairlead forces
     line_number = 0
     H,V = moor.get_fairlead_force_2d(line_number)    
-      
     fx,fy,fz = moor.get_fairlead_force_3d(line_number)    
 
     # --- Anchor forces
     Ha,Va = moor.get_anchor_force_2d(0)    
-
     fxa,fya,fza = moor.get_anchor_force_3d(0)    
-
-
-
 
     # --- Output 
     if not test:
@@ -96,34 +80,20 @@ def main(test=False):
         print("Line %d: Fx = %2.2f [N]  Fy = %2.2f [N]  Fz = %2.2f [N]\n"%(line_number, fx, fy, fz))
         print("Line %d: H = %2.2f [N]  V = %2.2f [N]"%(0, Ha, Va))
         print("Line %d: Fx = %2.2f [N]  Fy = %2.2f [N]  Fz = %2.2f [N]"%(0, fxa, fya, fza))
-        # TODO
-        #print("These values come from the output buffer as defined in the 'LINE PROPERTIES' portion of the input file")
-        #print("Labels : ", moor.get_output_labels()[0:6])
-        #print("Units  : ", moor.get_output_units()[0:6])
-        #v = moor.get_output_buffer()[0:6]
-        #print("Values : ", ["{0:0.2f}".format(i) for i in v])
+        print("These values come from the output buffer as defined in the 'LINE PROPERTIES' portion of the input file")
+        print("Labels : ", moor.get_output_labels()[0:6])
+        print("Units  : ", moor.get_output_units()[0:6])
+        v = moor.get_output_buffer()[0:6]
+        print("Values : ", ["{0:0.2f}".format(i) for i in v])
 
     # --- Plot
     if not test:
         fig, ax = moor.plot(numPoints=20, colors=['b'], fig=fig, ax=ax)
     
-    moor.end( )
-
-
+    moor.end()
 
     return K, K2, Kt, Kt2, H, V, fx, fy, fz, Ha, Va, fxa, fya, fza
 
 if __name__ == '__main__':
     main()
     plt.show()
-# if __name__ == '__test__':
-#     import platform
-#     if platform.system=='Windows':
-#         K, H, V, fx, fy, fz = main()
-# 
-#     np.testing.assert_almost_equal(K[0,0]/1e4,1.98637788, 6)
-#     np.testing.assert_almost_equal(K[5,5]/1e8,1.41222256, 6)
-#     np.testing.assert_almost_equal(fx/1e5, -5.9751333, 6)
-#     np.testing.assert_almost_equal(fz/1e6, 1.14343875, 6)
-
-
