@@ -899,7 +899,7 @@ class pyMAP(object):
 
         if fig is None:
             fig = plt.figure()
-            ax = Axes3D(fig)
+            ax = fig.add_subplot(111, projection="3d")
         if colors is None:
             colors = ['b']
         for i in range(self.size_lines()):

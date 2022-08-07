@@ -14,7 +14,6 @@ Line    LineType  UnstrLen  NodeAnch  NodeFair  Flags
 ---------------------- SOLVER OPTIONS-----------------------------------------
 Option 
 (-) 
-help
 inner_ftol 1e-6
 inner_gtol 1e-6
 inner_xtol 1e-6
