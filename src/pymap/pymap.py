@@ -38,6 +38,7 @@ def setupLib(libpath):
     """
     Load the MAP++ library and setup the data types for the C-routines
     """
+    print('Loading MAP library:', libpath)
     libexec = cdll.LoadLibrary(libpath)
 
     class ModelData_Type(Structure):
@@ -190,10 +191,12 @@ def setupLib(libpath):
     libexec.map_jacobian_dzdv.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
 
     libexec.map_get_fairlead_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
-    libexec.map_get_anchor_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
-
     libexec.map_get_fairlead_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
-    libexec.map_get_anchor_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+    try:
+        libexec.map_get_anchor_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+        libexec.map_get_anchor_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+    except:
+        print('[WARN] map_get_anchor_force_2d not available in this version of MAP')
 
     # plot routines
     libexec.map_plot_x_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
@@ -286,8 +289,6 @@ class pyMAP(object):
     # read file stuff
     @classmethod
     def initLib(cls, dllFileName=None):
-        #lib =None
-        # lib = cdll.LoadLibrary("map_x64.dll")
         if dllFileName is None:
             libext = get_config_var('EXT_SUFFIX')
             if libext is None or libext == '':
@@ -302,12 +303,11 @@ class pyMAP(object):
                 elif platform == "cygwin":
                     libext = '.dll'
 
-        maplib = '_libmap' + libext
-
-        libpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
+            maplib = '_libmap' + libext
+            dllFileName = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
 
         # Load the library and setup C-interfaces
-        libexec = setupLib(libpath)
+        libexec = setupLib(dllFileName)
 
         # Store in object
         cls.libexec = libexec
@@ -352,7 +352,16 @@ class pyMAP(object):
         if filename is not None:
             ext = os.path.splitext(filename)[1].lower()
             if ext=='.fst':
-                raise NotImplementedError('Reading a fst file to extract main data')
+                print('Reading WtrDepth, WtrDens, gravity and MAP filename from FAST input file')
+                from .fast_input_file import FASTInputFile
+                fst = FASTInputFile(filename)
+                if WtrDepth is None:
+                    WtrDepth=fst['WtrDpth'] # m
+                if gravity is None:
+                    gravity=fst['gravity'] # m/s^2
+                if WtrDens is None:
+                    WtrDens=fst['WtrDens'] # kg/m^3
+                filename = os.path.join(os.path.dirname(filename), fst['MooringFile'].replace('"',''))
             else:
                 # Assume that it's a MAP input file
                 pass
@@ -798,7 +807,7 @@ class pyMAP(object):
 
 
     def read_file( self, fileName ):
-        with open(fileName) as f:
+        with open(fileName, 'r', errors="surrogateescape") as f:
             lines = f.read().splitlines()
         self.read_list_input( lines )
 # 
@@ -817,6 +826,7 @@ class pyMAP(object):
         sOpts  = []
         listIter = iter(listIn)
         for line in listIter:
+            line = line.strip()
             if "LINE DICTIONARY" in line.upper():
                 for _ in range(3): line = next(listIter) # Process Header
                 while not any(opt in line for opt in option_breaks):
@@ -875,16 +885,16 @@ class pyMAP(object):
 
         # --- Load input lines into library
         for line in sCabLib:
-            self.f_type_init.contents.libraryInputLine =  (line+'\0').encode('utf-8')
+            self.f_type_init.contents.libraryInputLine =  (line+'\n\0').encode('utf-8')
             pyMAP.libexec.map_add_cable_library_input_text(self.f_type_init)                    
         for line in sNodes:
-            self.f_type_init.contents.nodeInputLine = (line+'\0').encode('utf-8')
+            self.f_type_init.contents.nodeInputLine = (line+'\n\0').encode('utf-8')
             pyMAP.libexec.map_add_node_input_text(self.f_type_init)
         for line in sProps:
-            self.f_type_init.contents.elementInputLine =(line+'\0').encode('utf-8')
+            self.f_type_init.contents.elementInputLine =(line+'\n\0').encode('utf-8')
             pyMAP.libexec.map_add_line_input_text(self.f_type_init)
         for line in sOpts:
-            self.f_type_init.contents.optionInputLine = (line+'\0').encode('utf-8')
+            self.f_type_init.contents.optionInputLine = (line+'\n\0').encode('utf-8')
             pyMAP.libexec.map_add_options_input_text(self.f_type_init)            
 
     # --------------------------------------------------------------------------------}

@@ -22,7 +22,7 @@ np.set_printoptions(suppress=True)
 scriptDir = os.path.dirname(__file__)
 
 def main(test=False):
-    """
+    r"""
     Step 1) First initialize an instance of a mooring system
 
     Step 2) Assume that (X, Y, Z, phi, theta, psi) are the translation and rotation displacement of the vessel. 
