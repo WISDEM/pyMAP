@@ -1,9 +1,12 @@
 """
 Wrapper for MAP DLL
-"""
-#   Copyright (C) 2014 mdm                                     
-#   map[dot]plus[dot]plus[dot]help[at]gmail                     
-#                                                              
+
+Adapted from:
+  https://bitbucket.org/mmasciola/map-plus-plus/src/master/
+
+  Copyright (C) 2014 mdm                                      
+  marco[dot]masciola[at]gmail    
+"""                      
 # Licensed to the Apache Software Foundation (ASF) under one   
 # or more contributor license agreements.  See the NOTICE file 
 # distributed with this work for additional information        
@@ -279,7 +282,10 @@ def setupLib(libpath):
 
     lib.map_get_header_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
     lib.map_get_unit_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
-    #lib.map_offset_fairlead.argtypes = [MapInput_Type, c_int, c_double, c_double, c_double, c_char_p, POINTER(c_int)]                    
+    try:
+        lib.map_offset_fairlead.argtypes = [MapInput_Type, c_int, c_double, c_double, c_double, c_char_p, POINTER(c_int)]                    
+    except:
+        print('[WARN] map_offset_fairlead not available in this version of MAP')
     return lib
 
 class pyMAP(object):
@@ -333,6 +339,7 @@ class pyMAP(object):
         self._K_lin       = None # Linear stiffness matrix
         self._K_lin_point = None # Point where linear stiffness matrix was computed
         self.Nodes=[]
+        self._initialized = False
      
         # Wrapper data
         self.f_type_d       = self.CreateDataState()
@@ -352,7 +359,6 @@ class pyMAP(object):
         if filename is not None:
             ext = os.path.splitext(filename)[1].lower()
             if ext=='.fst':
-                print('Reading WtrDepth, WtrDens, gravity and MAP filename from FAST input file')
                 from .fast_input_file import FASTInputFile
                 fst = FASTInputFile(filename)
                 if WtrDepth is None:
@@ -404,8 +410,11 @@ class pyMAP(object):
         return s
 
     def init( self ):
+        if self._initialized:
+            raise Exception('Cannot call map_init twice')
         pyMAP.lib.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
+        self._initialized = True
 
 
     def size_lines(self):
@@ -904,7 +913,6 @@ class pyMAP(object):
     def plot(self, numPoints, fig=None, ax=None, colors=None, ls='-'):
         """ plot the mooring profile """
         import matplotlib.pyplot as plt
-        import numpy as np
         from mpl_toolkits.mplot3d import Axes3D
 
         if fig is None:
