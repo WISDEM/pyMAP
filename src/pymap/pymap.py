@@ -39,7 +39,7 @@ def setupLib(libpath):
     Load the MAP++ library and setup the data types for the C-routines
     """
     print('Loading MAP library:', libpath)
-    libexec = cdll.LoadLibrary(libpath)
+    lib = cdll.LoadLibrary(libpath)
 
     class ModelData_Type(Structure):
         _fields_ = []
@@ -143,84 +143,84 @@ def setupLib(libpath):
     MapContinuous_Type = POINTER(ContinuousData_Type)
 
     # read file stuff
-    libexec.set_init_to_null.argtype=[MapInit_Type, c_char_p, POINTER(c_int) ]
-    libexec.map_set_summary_file_name.argtype=[MapInit_Type, c_char_p, POINTER(c_int) ]
-    libexec.map_add_cable_library_input_text.argtype=[MapInit_Type]
-    libexec.map_add_node_input_text.argtype=[MapInit_Type]
-    libexec.map_add_line_input_text.argtype=[MapInit_Type]
-    libexec.map_add_options_input_text.argtype=[MapInit_Type]
+    lib.set_init_to_null.argtype=[MapInit_Type, c_char_p, POINTER(c_int) ]
+    lib.map_set_summary_file_name.argtype=[MapInit_Type, c_char_p, POINTER(c_int) ]
+    lib.map_add_cable_library_input_text.argtype=[MapInit_Type]
+    lib.map_add_node_input_text.argtype=[MapInit_Type]
+    lib.map_add_line_input_text.argtype=[MapInit_Type]
+    lib.map_add_options_input_text.argtype=[MapInit_Type]
 
-    libexec.map_create_init_type.argtype       = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_initout_type.argtype    = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_input_type.argtype      = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_parameter_type.argtype  = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_constraint_type.argtype = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_other_type.argtype      = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_output_type.argtype     = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_continuous_type.argtype = [ c_char_p, POINTER(c_int) ]
-    libexec.map_create_continuous_type.argtype = [ MapData_Type ]
+    lib.map_create_init_type.argtype       = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_initout_type.argtype    = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_input_type.argtype      = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_parameter_type.argtype  = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_constraint_type.argtype = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_other_type.argtype      = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_output_type.argtype     = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_continuous_type.argtype = [ c_char_p, POINTER(c_int) ]
+    lib.map_create_continuous_type.argtype = [ MapData_Type ]
 
-    libexec.map_create_init_type.restype       = MapInit_Type
-    libexec.map_create_initout_type.restype    = MapInitOut_Type
-    libexec.map_create_input_type.restype      = MapInput_Type
-    libexec.map_create_parameter_type.restype  = MapParameter_Type
-    libexec.map_create_constraint_type.restype = MapConstraint_Type
-    libexec.map_create_other_type.restype      = MapData_Type
-    libexec.map_create_output_type.restype     = MapOutput_Type
-    libexec.map_create_continuous_type.restype = MapContinuous_Type
+    lib.map_create_init_type.restype       = MapInit_Type
+    lib.map_create_initout_type.restype    = MapInitOut_Type
+    lib.map_create_input_type.restype      = MapInput_Type
+    lib.map_create_parameter_type.restype  = MapParameter_Type
+    lib.map_create_constraint_type.restype = MapConstraint_Type
+    lib.map_create_other_type.restype      = MapData_Type
+    lib.map_create_output_type.restype     = MapOutput_Type
+    lib.map_create_continuous_type.restype = MapContinuous_Type
 
-    libexec.map_set_sea_depth.argtypes   = [ MapParameter_Type, c_double ]
-    libexec.map_set_gravity.argtypes     = [ MapParameter_Type, c_double ]
-    libexec.map_set_sea_density.argtypes = [ MapParameter_Type, c_double ]
+    lib.map_set_sea_depth.argtypes   = [ MapParameter_Type, c_double ]
+    lib.map_set_gravity.argtypes     = [ MapParameter_Type, c_double ]
+    lib.map_set_sea_density.argtypes = [ MapParameter_Type, c_double ]
 
-    libexec.map_size_lines.restype = c_int
+    lib.map_size_lines.restype = c_int
 
     # numeric routines
-    libexec.map_residual_function_length.restype = c_double
-    libexec.map_residual_function_height.restype = c_double
-    libexec.map_jacobian_dxdh.restype            = c_double
-    libexec.map_jacobian_dxdv.restype            = c_double
-    libexec.map_jacobian_dzdh.restype            = c_double
-    libexec.map_jacobian_dzdv.restype            = c_double
+    lib.map_residual_function_length.restype = c_double
+    lib.map_residual_function_height.restype = c_double
+    lib.map_jacobian_dxdh.restype            = c_double
+    lib.map_jacobian_dxdv.restype            = c_double
+    lib.map_jacobian_dzdh.restype            = c_double
+    lib.map_jacobian_dzdv.restype            = c_double
 
-    libexec.map_residual_function_length.argtypes = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_residual_function_height.argtypes = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_jacobian_dxdh.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_jacobian_dxdv.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_jacobian_dzdh.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_jacobian_dzdv.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_residual_function_length.argtypes = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_residual_function_height.argtypes = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_jacobian_dxdh.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_jacobian_dxdv.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_jacobian_dzdh.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_jacobian_dzdv.argtypes            = [ MapData_Type, c_int, c_char_p, POINTER(c_int) ]
 
-    libexec.map_get_fairlead_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
-    libexec.map_get_fairlead_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+    lib.map_get_fairlead_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+    lib.map_get_fairlead_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
     try:
-        libexec.map_get_anchor_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
-        libexec.map_get_anchor_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+        lib.map_get_anchor_force_2d.argtypes = [POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
+        lib.map_get_anchor_force_3d.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), MapData_Type, c_int, c_char_p, POINTER(c_int)]
     except:
         print('[WARN] map_get_anchor_force_2d not available in this version of MAP')
 
     # plot routines
-    libexec.map_plot_x_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_plot_x_array.restype  = POINTER(c_double)
-    libexec.map_plot_y_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_plot_y_array.restype  = POINTER(c_double)
-    libexec.map_plot_z_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
-    libexec.map_plot_z_array.restype  = POINTER(c_double)
-    libexec.map_plot_array_free.argtypes = [ POINTER(c_double) ]
+    lib.map_plot_x_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_plot_x_array.restype  = POINTER(c_double)
+    lib.map_plot_y_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_plot_y_array.restype  = POINTER(c_double)
+    lib.map_plot_z_array.argtypes = [ MapData_Type, c_int, c_int, c_char_p, POINTER(c_int) ]
+    lib.map_plot_z_array.restype  = POINTER(c_double)
+    lib.map_plot_array_free.argtypes = [ POINTER(c_double) ]
 
     # modifyers
-    libexec.map_offset_vessel.argtypes = [MapData_Type, MapInput_Type, c_double, c_double, c_double, c_double, c_double, c_double, c_char_p, POINTER(c_int)]        
-    libexec.map_linearize_matrix.argtypes = [MapInput_Type, MapParameter_Type, MapData_Type, MapOutput_Type, MapConstraint_Type, c_double, POINTER(c_int), c_char_p]        
-    libexec.map_linearize_matrix.restype  = POINTER(POINTER(c_double))
-    libexec.map_free_linearize_matrix.argtypes = [POINTER(POINTER(c_double))]
+    lib.map_offset_vessel.argtypes = [MapData_Type, MapInput_Type, c_double, c_double, c_double, c_double, c_double, c_double, c_char_p, POINTER(c_int)]        
+    lib.map_linearize_matrix.argtypes = [MapInput_Type, MapParameter_Type, MapData_Type, MapOutput_Type, MapConstraint_Type, c_double, POINTER(c_int), c_char_p]        
+    lib.map_linearize_matrix.restype  = POINTER(POINTER(c_double))
+    lib.map_free_linearize_matrix.argtypes = [POINTER(POINTER(c_double))]
 
     try:
-        libexec.map_f_op.argtypes = [MapInput_Type, MapParameter_Type, MapData_Type, MapOutput_Type, MapConstraint_Type, POINTER(c_int), c_char_p]        
-        libexec.map_f_op.restype  = POINTER(c_double)
-        libexec.map_free_f_op.argtypes = [POINTER(c_double)]
+        lib.map_f_op.argtypes = [MapInput_Type, MapParameter_Type, MapData_Type, MapOutput_Type, MapConstraint_Type, POINTER(c_int), c_char_p]        
+        lib.map_f_op.restype  = POINTER(c_double)
+        lib.map_free_f_op.argtypes = [POINTER(c_double)]
     except:
         print('[WARN] map_f_op not available in this version of MAP')
 
-    libexec.map_init.argtypes = [ MapInit_Type,
+    lib.map_init.argtypes = [ MapInit_Type,
                               MapInput_Type,
                               MapParameter_Type,
                               MapContinuous_Type,
@@ -233,7 +233,7 @@ def setupLib(libpath):
                               c_char_p]
 
 
-    libexec.map_update_states.argtypes = [ c_float,
+    lib.map_update_states.argtypes = [ c_float,
                                        c_int,
                                        MapInput_Type,
                                        MapParameter_Type,
@@ -244,7 +244,7 @@ def setupLib(libpath):
                                        POINTER(c_int),
                                        c_char_p]
 
-    libexec.map_calc_output.argtypes = [c_float,
+    lib.map_calc_output.argtypes = [c_float,
                                     MapInput_Type,
                                     MapParameter_Type,
                                     MapContinuous_Type,
@@ -255,7 +255,7 @@ def setupLib(libpath):
                                     POINTER(c_int),
                                     c_char_p]            
     
-    libexec.map_end.argtypes = [ MapInput_Type,
+    lib.map_end.argtypes = [ MapInput_Type,
                              MapParameter_Type,
                              MapContinuous_Type,
                              c_void_p,
@@ -265,7 +265,7 @@ def setupLib(libpath):
                              POINTER(c_int),
                              c_char_p]
 
-    libexec.map_initialize_msqs_base.argtypes = [MapInput_Type,
+    lib.map_initialize_msqs_base.argtypes = [MapInput_Type,
                                              MapParameter_Type,
                                              MapContinuous_Type,
                                              MapConstraint_Type,
@@ -273,18 +273,18 @@ def setupLib(libpath):
                                              MapOutput_Type,
                                              MapInitOut_Type]
 
-    libexec.map_size_lines.argtypes = [ MapData_Type,
+    lib.map_size_lines.argtypes = [ MapData_Type,
                                     POINTER(c_int),
                                     c_char_p]
 
-    libexec.map_get_header_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
-    libexec.map_get_unit_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
-    #libexec.map_offset_fairlead.argtypes = [MapInput_Type, c_int, c_double, c_double, c_double, c_char_p, POINTER(c_int)]                    
-    return libexec
+    lib.map_get_header_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
+    lib.map_get_unit_string.argtypes = [c_void_p, POINTER(c_char_p),   MapData_Type]
+    #lib.map_offset_fairlead.argtypes = [MapInput_Type, c_int, c_double, c_double, c_double, c_char_p, POINTER(c_int)]                    
+    return lib
 
 class pyMAP(object):
 
-    libexec = None # Will hold the dll library handle
+    lib = None # Will hold the dll library handle
 
     # read file stuff
     @classmethod
@@ -307,10 +307,10 @@ class pyMAP(object):
             dllFileName = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep + maplib
 
         # Load the library and setup C-interfaces
-        libexec = setupLib(dllFileName)
+        lib = setupLib(dllFileName)
 
         # Store in object
-        cls.libexec = libexec
+        cls.lib = lib
 
         cls.ierr = c_int(0)
         cls.status = create_string_buffer(1024)
@@ -322,7 +322,7 @@ class pyMAP(object):
 
         """
         # Call Class method
-        if pyMAP.libexec is None:
+        if pyMAP.lib is None:
             pyMAP.initLib(dllFileName)
         
         # Misc Data
@@ -343,8 +343,8 @@ class pyMAP(object):
         self.f_type_z       = self.CreateConstraintState( )
         self.f_type_init    = self.CreateInitState( )
         self.f_type_initout = self.CreateInitoutState( )
-        pyMAP.libexec.set_init_to_null(self.f_type_init, self.status, pointer(self.ierr) )
-        pyMAP.libexec.map_initialize_msqs_base(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout)
+        pyMAP.lib.set_init_to_null(self.f_type_init, self.status, pointer(self.ierr) )
+        pyMAP.lib.map_initialize_msqs_base(self.f_type_u, self.f_type_p, self.f_type_x, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout)
         
 
         callInit = False
@@ -404,23 +404,23 @@ class pyMAP(object):
         return s
 
     def init( self ):
-        pyMAP.libexec.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
+        pyMAP.lib.map_init( self.f_type_init, self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, self.f_type_initout, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
 
 
     def size_lines(self):
-        size = pyMAP.libexec.map_size_lines(self.f_type_d, pointer(self.ierr), self.status )
+        size = pyMAP.lib.map_size_lines(self.f_type_d, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
         return size
 
 
     def update_states(self, t, dt):
-        pyMAP.libexec.map_update_states(c_float(t), c_int(dt), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
+        pyMAP.lib.map_update_states(c_float(t), c_int(dt), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, pointer(self.ierr), self.status )
         if self.ierr.value != 0 : print(self.status.value)
 
 
     def calc_output(self, t):
-        pyMAP.libexec.map_calc_output(c_float(t), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status )
+        pyMAP.lib.map_calc_output(c_float(t), self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status )
         if self.ierr.value != 0 :
             print(self.status.value)
 
@@ -438,7 +438,7 @@ class pyMAP(object):
         size = self.f_type_y.contents.WriteOutput_Len + self.f_type_y.contents.wrtOutput_Len
         string_buffers = [create_string_buffer(16) for i in range(size)]
         pointers = (c_char_p*size)(*map(addressof, string_buffers))
-        pyMAP.libexec.map_get_header_string(None, pointers, self.f_type_d)
+        pyMAP.lib.map_get_header_string(None, pointers, self.f_type_d)
         return [s.value for s in string_buffers]
 
     
@@ -446,7 +446,7 @@ class pyMAP(object):
         size = self.f_type_y.contents.WriteOutput_Len + self.f_type_y.contents.wrtOutput_Len
         string_buffers = [create_string_buffer(16) for i in range(size)]
         pointers = (c_char_p*size)(*map(addressof, string_buffers))
-        pyMAP.libexec.map_get_unit_string(None, pointers, self.f_type_d)
+        pyMAP.lib.map_get_unit_string(None, pointers, self.f_type_d)
         return [s.value for s in string_buffers]
     
     
@@ -469,26 +469,26 @@ class pyMAP(object):
     # MAP_EXTERNCALL void MAP_Output_Delete( InputData* y )
     # MAP_EXTERNCALL void MAP_OtherState_Delete( ModelData* data )
     def end(self):
-        pyMAP.libexec.map_end(self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
+        pyMAP.lib.map_end(self.f_type_u, self.f_type_p, self.f_type_x, None, self.f_type_z, self.f_type_d, self.f_type_y, pointer(self.ierr), self.status)
  
 
     # Set a name for the MAP summary file. Does not need to be called. If not called, the default name is 'outlist.map.sum'
     def summary_file(self, echo_file):
         self.f_type_init.contents.summaryFileName = echo_file.encode('utf-8')
-        pyMAP.libexec.map_set_summary_file_name(self.f_type_init, self.status, pointer(self.ierr) )
+        pyMAP.lib.map_set_summary_file_name(self.f_type_init, self.status, pointer(self.ierr) )
 
 
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL InitializationData* MAP_InitInput_Create( char* map_msg, MAP_ERROR_CODE* ierr )
     def CreateInitState( self ) :
-        obj = pyMAP.libexec.map_create_init_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_init_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL void MAP_InitOutput_Delete( InputData* io )
     def CreateInitoutState( self ) :
-        obj = pyMAP.libexec.map_create_initout_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_initout_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
@@ -496,7 +496,7 @@ class pyMAP(object):
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL ModelData *MAP_OtherState_Create( char *map_msg, MAP_ERROR_CODE *ierr )
     def CreateDataState( self ) :
-        obj = pyMAP.libexec.map_create_other_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_other_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
@@ -504,7 +504,7 @@ class pyMAP(object):
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL InputData* MAP_Input_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateInputState( self ) :
-        obj = pyMAP.libexec.map_create_input_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_input_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
@@ -512,14 +512,14 @@ class pyMAP(object):
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL ContinuousData* MAP_ContState_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateContinuousState( self ) :
-        obj = pyMAP.libexec.map_create_continuous_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_continuous_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL OutputData *MAP_Output_Create( char *map_msg, MAP_ERROR_CODE *ierr )
     def CreateOutputState( self ) :
-        obj = pyMAP.libexec.map_create_output_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_output_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
@@ -527,7 +527,7 @@ class pyMAP(object):
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL ConstraintData* MAP_ConstrState_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateConstraintState( self ) :
-        obj = pyMAP.libexec.map_create_constraint_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_constraint_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
@@ -535,61 +535,61 @@ class pyMAP(object):
     # Calls function in fortdatamanager.c to create instance of c structs
     # MAP_EXTERNCALL ParameterData* MAP_Param_Create( char* map_msg, MAP_ERROR_CODE *ierr )
     def CreateParameterState( self ) :
-        obj = pyMAP.libexec.map_create_parameter_type( self.status, pointer(self.ierr) )
+        obj = pyMAP.lib.map_create_parameter_type( self.status, pointer(self.ierr) )
         if self.ierr.value != 0 : print(self.status.value)
         return obj
 
 
     def map_set_sea_depth( self, depth ):
          self._WtrDepth=depth
-         pyMAP.libexec.map_set_sea_depth( self.f_type_p, depth )
+         pyMAP.lib.map_set_sea_depth( self.f_type_p, depth )
 
     def map_set_gravity( self, g ):
         self._gravity=g
-        pyMAP.libexec.map_set_gravity( self.f_type_p, g )
+        pyMAP.lib.map_set_gravity( self.f_type_p, g )
 
     def map_set_sea_density( self, rho ):
         self._WtrDens=rho
-        pyMAP.libexec.map_set_sea_density( self.f_type_p, rho )
+        pyMAP.lib.map_set_sea_density( self.f_type_p, rho )
 
     def plot_x( self, lineNum, length ) :
         arr = [None]*length
         array = POINTER(c_double)
-        array = pyMAP.libexec.map_plot_x_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
+        array = pyMAP.lib.map_plot_x_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
-            pyMAP.libexec.map_plot_array_free( array )        
+            pyMAP.lib.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
         arr = [array[j] for j in range(length)]        
-        pyMAP.libexec.map_plot_array_free( array )        
+        pyMAP.lib.map_plot_array_free( array )        
         return arr 
 
     def plot_y( self, lineNum, length ) :
         arr = [None]*length
         array = POINTER(c_double)
-        array = pyMAP.libexec.map_plot_y_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
+        array = pyMAP.lib.map_plot_y_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
-            pyMAP.libexec.map_plot_array_free( array )        
+            pyMAP.lib.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
         arr = [array[j] for j in range(length)]        
-        pyMAP.libexec.map_plot_array_free( array )        
+        pyMAP.lib.map_plot_array_free( array )        
         return arr 
 
 
     def plot_z( self, lineNum, length ) :
         arr = [None]*length
         array = POINTER(c_double)
-        array = pyMAP.libexec.map_plot_z_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
+        array = pyMAP.lib.map_plot_z_array( self.f_type_d, lineNum, length, self.status, pointer(self.ierr) )        
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
-            pyMAP.libexec.map_plot_array_free( array )        
+            pyMAP.lib.map_plot_array_free( array )        
             sys.exit('MAP terminated premature.')
         arr = [array[j] for j in range(length)]        
-        pyMAP.libexec.map_plot_array_free( array )        
+        pyMAP.lib.map_plot_array_free( array )        
         return arr 
 
 
@@ -609,7 +609,7 @@ class pyMAP(object):
         """
         H_ref = c_double(-999.9)
         V_ref = c_double(-999.9)
-        pyMAP.libexec.map_get_fairlead_force_2d( pointer(H_ref), pointer(V_ref),self.f_type_d, index, self.status, pointer(self.ierr))
+        pyMAP.lib.map_get_fairlead_force_2d( pointer(H_ref), pointer(V_ref),self.f_type_d, index, self.status, pointer(self.ierr))
         return H_ref.value, V_ref.value
     
     
@@ -630,7 +630,7 @@ class pyMAP(object):
         fx = c_double(-999.9)
         fy = c_double(-999.9)
         fz = c_double(-999.9)
-        pyMAP.libexec.map_get_fairlead_force_3d( pointer(fx), pointer(fy), pointer(fz), self.f_type_d, index, self.status, pointer(self.ierr))
+        pyMAP.lib.map_get_fairlead_force_3d( pointer(fx), pointer(fy), pointer(fz), self.f_type_d, index, self.status, pointer(self.ierr))
         return fx.value, fy.value, fz.value
 
 
@@ -650,7 +650,7 @@ class pyMAP(object):
         """
         Ha_ref = c_double(-999.9)
         Va_ref = c_double(-999.9)
-        pyMAP.libexec.map_get_anchor_force_2d( pointer(Ha_ref), pointer(Va_ref),self.f_type_d, index, self.status, pointer(self.ierr))
+        pyMAP.lib.map_get_anchor_force_2d( pointer(Ha_ref), pointer(Va_ref),self.f_type_d, index, self.status, pointer(self.ierr))
         return Ha_ref.value, Va_ref.value
     
     
@@ -671,11 +671,11 @@ class pyMAP(object):
         fxa = c_double(-999.9)
         fya = c_double(-999.9)
         fza = c_double(-999.9)
-        pyMAP.libexec.map_get_anchor_force_3d( pointer(fxa), pointer(fya), pointer(fza), self.f_type_d, index, self.status, pointer(self.ierr))
+        pyMAP.lib.map_get_anchor_force_3d( pointer(fxa), pointer(fya), pointer(fza), self.f_type_d, index, self.status, pointer(self.ierr))
         return fxa.value, fya.value, fza.value
     
     def funcl( self, i ) :
-        self.val = pyMAP.libexec.map_residual_function_length(self.f_type_d, i, self.status, pointer(self.ierr))
+        self.val = pyMAP.lib.map_residual_function_length(self.f_type_d, i, self.status, pointer(self.ierr))
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -684,7 +684,7 @@ class pyMAP(object):
 
 
     def funch( self, i ) :
-        self.val = pyMAP.libexec.map_residual_function_height(self.f_type_d, i, self.status, pointer(self.ierr))
+        self.val = pyMAP.lib.map_residual_function_height(self.f_type_d, i, self.status, pointer(self.ierr))
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -693,7 +693,7 @@ class pyMAP(object):
 
 
     def dxdh( self, i ) :
-        self.val = pyMAP.libexec.map_jacobian_dxdh( self.f_type_d, i, self.status, pointer(self.ierr) )
+        self.val = pyMAP.lib.map_jacobian_dxdh( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -702,7 +702,7 @@ class pyMAP(object):
 
 
     def dxdv( self, i ) :
-        self.val = pyMAP.libexec.map_jacobian_dxdv( self.f_type_d, i, self.status, pointer(self.ierr) )
+        self.val = pyMAP.lib.map_jacobian_dxdv( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -711,7 +711,7 @@ class pyMAP(object):
 
 
     def dzdh( self, i ) :
-        self.val = pyMAP.libexec.map_jacobian_dzdh( self.f_type_d, i, self.status, pointer(self.ierr) )
+        self.val = pyMAP.lib.map_jacobian_dzdh( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -720,7 +720,7 @@ class pyMAP(object):
 
 
     def dzdv( self, i ) :
-        self.val = pyMAP.libexec.map_jacobian_dzdv( self.f_type_d, i, self.status, pointer(self.ierr) )
+        self.val = pyMAP.lib.map_jacobian_dzdv( self.f_type_d, i, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -733,13 +733,13 @@ class pyMAP(object):
         Return linear matrix, transpose of stiffness matrix at (0,0,0)
         """
         array = POINTER(POINTER(c_double))
-        array = pyMAP.libexec.map_linearize_matrix( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, epsilon, pointer(self.ierr), self.status)        
+        array = pyMAP.lib.map_linearize_matrix( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, epsilon, pointer(self.ierr), self.status)        
         if self.ierr.value != 0 :
            print(self.status.value)
            self.end( )
            sys.exit('MAP terminated premature.')
         arr = [[array[j][i] for i in range(6)] for j in range(6)]
-        pyMAP.libexec.map_free_linearize_matrix(array)        
+        pyMAP.lib.map_free_linearize_matrix(array)        
         # Stiffness matrix is defined at (0,0,0)
         K_0   = np.array(arr) # NOTE: this is a transposed of a stiffness matrix !!!
         return K_0
@@ -770,13 +770,13 @@ class pyMAP(object):
     def f_op(self) :
         try:
             array = POINTER(c_double)
-            array = pyMAP.libexec.map_f_op( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, pointer(self.ierr), self.status)        
+            array = pyMAP.lib.map_f_op( self.f_type_u, self.f_type_p, self.f_type_d, self.f_type_y, self.f_type_z, pointer(self.ierr), self.status)        
             if self.ierr.value != 0 :
                print(self.status.value)
                self.end( )
                sys.exit('MAP terminated premature.')
             arr = [array[i] for i in range(6)]
-            pyMAP.libexec.map_free_f_op(array)        
+            pyMAP.lib.map_free_f_op(array)        
             Fop   = np.array(arr)
         except:
             print('[WARN] MAP f_op not available in this version of the library')
@@ -791,7 +791,7 @@ class pyMAP(object):
          - the is rotation around y  
          - psi is rotation around z  
         """
-        pyMAP.libexec.map_offset_vessel(self.f_type_d, self.f_type_u, x,y,z,phi,the,psi, self.status, pointer(self.ierr) )
+        pyMAP.lib.map_offset_vessel(self.f_type_d, self.f_type_u, x,y,z,phi,the,psi, self.status, pointer(self.ierr) )
         if self.ierr.value != 0 :
             print(self.status.value)
             self.end( )
@@ -799,7 +799,7 @@ class pyMAP(object):
 
 
     #def offset_fairlead(self,x,y,z, idx):
-    #    pyMAP.libexec.map_offset_fairlead(self.f_type_u, c_int(idx), x, y, z, self.status, pointer(self.ierr) )
+    #    pyMAP.lib.map_offset_fairlead(self.f_type_u, c_int(idx), x, y, z, self.status, pointer(self.ierr) )
     #    if self.ierr.value != 0 :
     #        print(self.status.value)
     #        self.end( )
@@ -886,16 +886,16 @@ class pyMAP(object):
         # --- Load input lines into library
         for line in sCabLib:
             self.f_type_init.contents.libraryInputLine =  (line+'\n\0').encode('utf-8')
-            pyMAP.libexec.map_add_cable_library_input_text(self.f_type_init)                    
+            pyMAP.lib.map_add_cable_library_input_text(self.f_type_init)                    
         for line in sNodes:
             self.f_type_init.contents.nodeInputLine = (line+'\n\0').encode('utf-8')
-            pyMAP.libexec.map_add_node_input_text(self.f_type_init)
+            pyMAP.lib.map_add_node_input_text(self.f_type_init)
         for line in sProps:
             self.f_type_init.contents.elementInputLine =(line+'\n\0').encode('utf-8')
-            pyMAP.libexec.map_add_line_input_text(self.f_type_init)
+            pyMAP.lib.map_add_line_input_text(self.f_type_init)
         for line in sOpts:
             self.f_type_init.contents.optionInputLine = (line+'\n\0').encode('utf-8')
-            pyMAP.libexec.map_add_options_input_text(self.f_type_init)            
+            pyMAP.lib.map_add_options_input_text(self.f_type_init)            
 
     # --------------------------------------------------------------------------------}
     # --- Utils 
