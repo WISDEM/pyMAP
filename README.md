@@ -25,5 +25,11 @@ For detailed installation instructions of WISDEM modules see <https://github.com
     $ python -m pip install numpy
     $ python setup.py install
 
+Alternatively, you can do : 
+    
+    $ pip install -e . 
+
+As it seems to be better working on python 3.12 and later (see this stackoverflow [post](https://stackoverflow.com/questions/15724093/difference-between-python-setup-py-install-and-pip-install) ) 
+
 For software issues please use <https://github.com/WISDEM/pyMAP/issues>.  For functionality and theory related questions and comments please use the NWTC forum for [Systems Engineering Software Questions](https://wind.nrel.gov/forum/wind/viewtopic.php?f=34&t=1002).
 
